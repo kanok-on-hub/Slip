@@ -3,191 +3,292 @@
 <head>
   <meta charset="UTF-8" />
   <title>แก้ไขข้อมูลการรับเงิน</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
   <style>
+    :root {
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --bg-color: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --border-light: #E5E7EB;
+      --accent-bg: #EFF6FF;
+      --accent-text: #1E3A8A;
+      --danger: #EF4444;
+      --success: #10B981;
+    }
+
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
-      padding: 16px;
-      background: #f9fafb;
-      color: #111827;
+      padding: 20px 16px;
+      background: var(--bg-color);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
       max-width: 480px;
       margin: 0 auto;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-      padding: 16px 16px 20px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    /* Header Section */
+    .header-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .header-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      display: inline-block;
     }
 
     h1 {
-      font-size: 18px;
-      margin: 0 0 12px;
-      color: #111827;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      color: var(--text-main);
     }
 
     .subtitle {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
     }
 
+    /* Readonly Info Card */
+    .info-card {
+      background: var(--accent-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      border: 1px solid #DBEAFE;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      color: #3B82F6;
+      font-weight: 600;
+    }
+
+    .info-value {
+      color: var(--accent-text);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    /* Form Fields */
     .field {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .field label {
       display: block;
-      font-size: 12px;
-      color: #4b5563;
-      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
     }
 
     .field input {
       width: 100%;
       box-sizing: border-box;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 13px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-light);
+      font-size: 15px;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
     }
 
-    .field input[readonly] {
-      background: #f3f4f6;
-      color: #6b7280;
+    .field input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .field input::placeholder {
+      color: #9CA3AF;
+    }
+
+    /* ซ่อน input แบบ readonly เพราะเราย้ายไปโชว์ใน info-card แทนแล้ว */
+    input.hidden-input {
+      display: none;
     }
 
     .hint {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 2px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .buttons {
-      margin-top: 16px;
+    /* File Link Style */
+    .file-link-wrapper {
+      background: #F9FAFB;
+      border: 1px dashed #D1D5DB;
+      border-radius: 12px;
+      padding: 12px;
       display: flex;
+      align-items: center;
       gap: 8px;
+    }
+
+    .file-link-wrapper input {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      width: 100%;
+    }
+    
+    .file-link-wrapper input:focus {
+      box-shadow: none;
+    }
+
+    /* Buttons */
+    .buttons {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
     }
 
     .btn {
       flex: 1;
-      padding: 9px 12px;
-      border-radius: 999px;
+      padding: 14px 16px;
+      border-radius: 14px;
       border: none;
-      font-size: 13px;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
     }
 
     .btn-primary {
-      background: #0369a1;
-      color: #ffffff;
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
     }
 
     .btn-secondary {
-      background: #e5e7eb;
-      color: #374151;
+      background: #E5E7EB;
+      color: #4B5563;
     }
 
     .message {
-      margin-top: 12px;
-      font-size: 12px;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
     }
 
     .message.success {
-      color: #16a34a;
+      background: #D1FAE5;
+      color: #065F46;
     }
 
     .message.error {
-      color: #dc2626;
-    }
-
-    .readonly-tag {
-      display: inline-block;
-      font-size: 10px;
-      background: #e5e7eb;
-      color: #4b5563;
-      padding: 2px 6px;
-      border-radius: 999px;
-      margin-left: 6px;
-    }
-
-    a.link-inline {
-      font-size: 11px;
-      color: #2563eb;
-      text-decoration: underline;
-      cursor: pointer;
+      background: #FEE2E2;
+      color: #991B1B;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>แก้ไขข้อมูลการรับเงิน</h1>
-    <div class="subtitle" id="subtitle">กำลังโหลด LIFF...</div>
+    
+    <div class="header-section">
+      <div class="header-icon">✏️</div>
+      <h1>แก้ไขข้อมูล</h1>
+      <div class="subtitle" id="subtitle">กำลังโหลดข้อมูลจากระบบ...</div>
+    </div>
 
     <div id="form-area" style="display:none;">
+      
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Run No.</span>
+          <span class="info-value" id="displayRunNo">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Company</span>
+          <span class="info-value" id="displayReceiverName">-</span>
+        </div>
+      </div>
+
+      <input type="text" id="runNo" class="hidden-input" readonly />
+      <input type="text" id="receiverName" class="hidden-input" readonly />
+
       <div class="field">
-        <label>
-          Run No
-          <span class="readonly-tag">อ่านอย่างเดียว</span>
-        </label>
-        <input type="text" id="runNo" readonly />
+        <label>👤 ชื่อลูกค้า (Customer Name)</label>
+        <input type="text" id="senderName" placeholder="ex. ADecor, SCG Home" />
       </div>
 
       <div class="field">
-        <label>
-          บริษัท (Receiver)
-          <span class="readonly-tag">อ่านอย่างเดียว</span>
-        </label>
-        <input type="text" id="receiverName" readonly />
+        <label>📅 วันที่รับเงิน (Date)</label>
+        <input type="text" id="transactionDate" placeholder="ex. 24/2/2026" />
+        <div class="hint">💡 โปรดใช้รูปแบบ วัน/เดือน/ปี (ค.ศ.)</div>
       </div>
 
       <div class="field">
-        <label>วันที่รับเงิน (Transaction Date)</label>
-        <input type="text" id="transactionDate" placeholder="เช่น 24/2/2026" />
-        <div class="hint">โปรดใช้รูปแบบเดิม เช่น 24/2/2026</div>
+        <label>💰 จำนวนเงิน (Amount)</label>
+        <input type="number" id="amount" placeholder="ex. 5999" step="any" />
+        <div class="hint">💡 กรอกเฉพาะตัวเลข ไม่ต้องใส่ลูกน้ำ ( , )</div>
       </div>
 
       <div class="field">
-        <label>จำนวนเงิน (Amount)</label>
-        <input type="text" id="amount" placeholder="เช่น 5999" />
-        <div class="hint">กรอกเฉพาะตัวเลข ไม่ต้องใส่ ,</div>
-      </div>
-
-      <div class="field">
-        <label>ชื่อลูกค้า (Sender Name)</label>
-        <input type="text" id="senderName" placeholder="เช่น ADecor" />
-      </div>
-
-      <div class="field">
-        <label>
-          ลิงก์ไฟล์ (เปิดดูสลิป)
-          <span class="readonly-tag">อ่านอย่างเดียว</span>
-        </label>
-        <input type="text" id="fileUrl" readonly />
-        <div class="hint">
-          สามารถคัดลอก URL ไปเปิดดูสลิปใน browser ได้
+        <label>🔗 ลิงก์ไฟล์สลิป (Slip URL)</label>
+        <div class="file-link-wrapper">
+          <span>📄</span>
+          <input type="text" id="fileUrl" readonly placeholder="กำลังโหลดลิงก์..." />
         </div>
       </div>
 
       <div class="buttons">
-        <button class="btn btn-secondary" type="button" id="btnCancel">
-          ยกเลิก
-        </button>
-        <button class="btn btn-primary" type="button" id="btnSave">
-          บันทึก
-        </button>
+        <button class="btn btn-secondary" type="button" id="btnCancel">ยกเลิก</button>
+        <button class="btn btn-primary" type="button" id="btnSave">บันทึกข้อมูล</button>
       </div>
 
       <div id="message" class="message"></div>
     </div>
   </div>
 
-  <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // 🔧 TODO: แก้สองค่านี้ให้เป็นของจริง
+    // 🔧 TODO: เช็คค่า 2 ตัวนี้ให้ตรงกับระบบจริงของคุณ
     const LIFF_ID = '2009213238-f1ncr2hm';
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
 
@@ -204,13 +305,17 @@
 
     function showMessage(text, type) {
       const el = document.getElementById('message');
-      el.textContent = text || '';
-      el.className = 'message ' + (type || '');
+      if (!text) {
+        el.className = 'message';
+        return;
+      }
+      el.textContent = text;
+      el.className = 'message show ' + (type || '');
     }
 
     async function loadData(runNo, receiver) {
       const subtitle = document.getElementById('subtitle');
-      subtitle.textContent = 'กำลังโหลดข้อมูลจากระบบ...';
+      subtitle.textContent = 'โปรดตรวจสอบและแก้ไขข้อมูลให้ถูกต้อง';
 
       const url = `${BACKEND_URL}?action=get&runNo=${encodeURIComponent(runNo)}&receiver=${encodeURIComponent(receiver)}`;
 
@@ -227,6 +332,8 @@
       }
 
       const data = json.data || {};
+      
+      // อัปเดตตัวแปรสำหรับ Backend
       document.getElementById('runNo').value = data.runNo || runNo;
       document.getElementById('receiverName').value = data.receiverName || receiver;
       document.getElementById('transactionDate').value = data.transactionDate || '';
@@ -234,7 +341,10 @@
       document.getElementById('senderName').value = data.senderName || '';
       document.getElementById('fileUrl').value = data.fileUrl || '';
 
-      subtitle.textContent = `รายการของ ${data.receiverName || receiver} | Run No: ${data.runNo || runNo}`;
+      // อัปเดต UI (Display เฉพาะส่วน Info Card)
+      document.getElementById('displayRunNo').textContent = data.runNo || runNo;
+      document.getElementById('displayReceiverName').textContent = data.receiverName || receiver;
+
       document.getElementById('form-area').style.display = 'block';
     }
 
@@ -254,7 +364,11 @@
         return;
       }
 
-      showMessage('กำลังบันทึกข้อมูล...', '');
+      // เปลี่ยน Text ปุ่มตอนกด Save ป้องกันกดเบิ้ล
+      const btnSave = document.getElementById('btnSave');
+      btnSave.textContent = 'กำลังบันทึก...';
+      btnSave.disabled = true;
+      showMessage('', ''); // Clear message
 
       const payload = {
         runNo,
@@ -264,39 +378,36 @@
         senderName
       };
 
-      const res = await fetch(`${BACKEND_URL}?action=update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      let json;
       try {
-        json = await res.json();
+        const res = await fetch(`${BACKEND_URL}?action=update`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+
+        if (json.ok) {
+          showMessage('บันทึกข้อมูลเรียบร้อยแล้ว ✅', 'success');
+          try {
+            if (liff.isInClient()) {
+              setTimeout(() => liff.closeWindow(), 1200); // ดีเลย์ให้ลูกค้าเห็นข้อความสำเร็จนิดนึง
+            }
+          } catch (e) {}
+        } else {
+          showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
+        }
       } catch (err) {
         showMessage('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
-        return;
-      }
-
-      if (json.ok) {
-        showMessage('บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
-        // ถ้าอยากให้ปิดหน้าต่างหลังบันทึก และอยู่ใน LINE App:
-        try {
-          if (liff.isInClient()) {
-            setTimeout(() => liff.closeWindow(), 800);
-          }
-        } catch (e) {
-          // ถ้าปิดไม่ได้ก็ไม่เป็นไร
-        }
-      } else {
-        showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
+      } finally {
+        btnSave.textContent = 'บันทึกข้อมูล';
+        btnSave.disabled = false;
       }
     }
 
     async function main() {
       const subtitle = document.getElementById('subtitle');
 
-      // 1) init LIFF
       try {
         await liff.init({ liffId: LIFF_ID });
       } catch (err) {
@@ -305,26 +416,24 @@
         return;
       }
 
-      // 2) อ่าน runNo + receiver จาก query string
       const params = getQueryParams();
       const runNo = params.runNo;
       const receiver = params.receiver;
 
       if (!runNo || !receiver) {
-        subtitle.textContent = 'ไม่พบ runNo หรือ receiver ใน URL';
+        subtitle.textContent = 'ไม่พบข้อมูล Run No หรือ Company ใน URL';
         return;
       }
 
-      // 3) โหลดข้อมูลจาก Backend
       try {
         await loadData(runNo, receiver);
       } catch (err) {
         console.error(err);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (err.message || err);
+        showMessage(err.message || err, 'error');
         return;
       }
 
-      // 4) bind ปุ่ม
       document.getElementById('btnSave').addEventListener('click', () => {
         saveData().catch(err => {
           console.error(err);
@@ -333,14 +442,13 @@
       });
 
       document.getElementById('btnCancel').addEventListener('click', () => {
-        showMessage('ยกเลิกการแก้ไข (ข้อมูลยังไม่ถูกเปลี่ยน)', 'error');
         try {
           if (liff.isInClient()) {
             liff.closeWindow();
+          } else {
+            showMessage('ยกเลิกการแก้ไขแล้ว', 'error');
           }
-        } catch (e) {
-          // ถ้าปิดไม่ได้ก็เฉย ๆ
-        }
+        } catch (e) {}
       });
     }
 
