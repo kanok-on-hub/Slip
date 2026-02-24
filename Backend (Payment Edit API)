@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>แก้ไขข้อมูลการรับเงิน</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #f9fafb;
+      color: #111827;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      padding: 16px 16px 20px;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      color: #111827;
+    }
+    .subtitle {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 16px;
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+    .field input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+    }
+    .field input[readonly] {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .hint {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+    .buttons {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #0369a1;
+      color: #ffffff;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .message.success {
+      color: #16a34a;
+    }
+    .message.error {
+      color: #dc2626;
+    }
+    .readonly-tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #e5e7eb;
+      color: #4b5563;
+      padding: 2px 6px;
+      border-radius: 999px;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>แก้ไขข้อมูลการรับเงิน</h1>
+    <div class="subtitle" id="subtitle">กำลังโหลด LIFF...</div>
+
+    <div id="form-area" style="display:none;">
+      <div class="field">
+        <label>Run No <span class="readonly-tag">อ่านอย่างเดียว</span></label>
+        <input type="text" id="runNo" readonly />
+      </div>
+
+      <div class="field">
+        <label>บริษัท (Receiver) <span class="readonly-tag">อ่านอย่างเดียว</span></label>
+        <input type="text" id="receiverName" readonly />
+      </div>
+
+      <div class="field">
+        <label>วันที่รับเงิน (Transaction Date)</label>
+        <input type="text" id="transactionDate" placeholder="เช่น 24/2/2026" />
+        <div class="hint">โปรดใช้รูปแบบเดิม เช่น 24/2/2026</div>
+      </div>
+
+      <div class="field">
+        <label>จำนวนเงิน (Amount)</label>
+        <input type="text" id="amount" placeholder="เช่น 5999" />
+        <div class="hint">กรอกเฉพาะตัวเลข ไม่ต้องใส่ ,</div>
+      </div>
+
+      <div class="field">
+        <label>ชื่อลูกค้า (Sender Name)</label>
+        <input type="text" id="senderName" placeholder="เช่น ADecor" />
+      </div>
+
+      <div class="field">
+        <label>ลิงก์ไฟล์ (เปิดดูสลิป)</label>
+        <input type="text" id="fileUrl" readonly />
+        <div class="hint">สามารถ copy URL เพื่อเปิดดูสลิปได้</div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-secondary" type="button" id="btnCancel">ยกเลิก</button>
+        <button class="btn btn-primary" type="button" id="btnSave">บันทึก</button>
+      </div>
+
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    const LIFF_ID = '2009213238-f1ncr2hm';
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
+
+    function getQueryParams() {
+      const params = {};
+      const qs = window.location.search.substring(1).split("&");
+      qs.forEach(p => {
+        const [k, v] = p.split("=");
+        if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || "");
+      });
+      return params;
+    }
+
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text || '';
+      el.className = 'message ' + (type || '');
+    }
+
+    async function loadData(runNo, receiver) {
+      const subtitle = document.getElementById('subtitle');
+      subtitle.textContent = 'กำลังโหลดข้อมูลจากระบบ...';
+
+      const url = `${BACKEND_URL}?action=get&runNo=${encodeURIComponent(runNo)}&receiver=${encodeURIComponent(receiver)}`;
+
+      const res = await fetch(url, { method: 'GET' });
+      const json = await res.json();
+      if (!json.ok) {
+        throw new Error(json.error || 'โหลดข้อมูลไม่สำเร็จ');
+      }
+
+      const data = json.data || {};
+      document.getElementById('runNo').value = data.runNo || runNo;
+      document.getElementById('receiverName').value = data.receiverName || receiver;
+      document.getElementById('transactionDate').value = data.transactionDate || '';
+      document.getElementById('amount').value = data.amount || '';
+      document.getElementById('senderName').value = data.senderName || '';
+      document.getElementById('fileUrl').value = data.fileUrl || '';
+
+      subtitle.textContent = `รายการของ ${data.receiverName || receiver} | Run No: ${data.runNo || runNo}`;
+      document.getElementById('form-area').style.display = 'block';
+    }
+
+    async function saveData() {
+      const runNo = document.getElementById('runNo').value.trim();
+      const receiverName = document.getElementById('receiverName').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const transactionDate = document.getElementById('transactionDate').value.trim();
+      const senderName = document.getElementById('senderName').value.trim();
+
+      if (!amount) {
+        showMessage('กรุณากรอกจำนวนเงิน', 'error');
+        return;
+      }
+      if (!transactionDate) {
+        showMessage('กรุณากรอกวันที่รับเงิน', 'error');
+        return;
+      }
+
+      showMessage('กำลังบันทึกข้อมูล...', '');
+
+      const payload = {
+        runNo,
+        receiverName,
+        amount,
+        transactionDate,
+        senderName
+      };
+
+      const res = await fetch(`${BACKEND_URL}?action=update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+
+      if (json.ok) {
+        showMessage('บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
+        // ถ้าอยากให้ปิดหน้า LIFF หลังบันทึก:
+        // if (liff.isInClient()) liff.closeWindow();
+      } else {
+        showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
+      }
+    }
+
+    async function main() {
+      const subtitle = document.getElementById('subtitle');
+      try {
+        await liff.init({ liffId: LIFF_ID });
+      } catch (err) {
+        console.error(err);
+        subtitle.textContent = 'โหลด LIFF ไม่สำเร็จ: ' + (err.message || err);
+        return;
+      }
+
+      const params = getQueryParams();
+      const runNo = params.runNo;
+      const receiver = params.receiver;
+
+      if (!runNo || !receiver) {
+        subtitle.textContent = 'ไม่พบ runNo หรือ receiver ใน URL';
+        return;
+      }
+
+      try {
+        await loadData(runNo, receiver);
+      } catch (err) {
+        console.error(err);
+        subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (err.message || err);
+      }
+
+      document.getElementById('btnSave').addEventListener('click', () => {
+        saveData().catch(err => {
+          console.error(err);
+          showMessage('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        });
+      });
+
+      document.getElementById('btnCancel').addEventListener('click', () => {
+        showMessage('ยกเลิกการแก้ไข (ข้อมูลยังไม่ถูกเปลี่ยน)', 'error');
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        }
+      });
+    }
+
+    window.addEventListener('load', main);
+  </script>
+</body>
+</html>
