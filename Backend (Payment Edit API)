@@ -12,6 +12,7 @@
       background: #f9fafb;
       color: #111827;
     }
+
     .container {
       max-width: 480px;
       margin: 0 auto;
@@ -20,25 +21,30 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.04);
       padding: 16px 16px 20px;
     }
+
     h1 {
       font-size: 18px;
       margin: 0 0 12px;
       color: #111827;
     }
+
     .subtitle {
       font-size: 12px;
       color: #6b7280;
       margin-bottom: 16px;
     }
+
     .field {
       margin-bottom: 12px;
     }
+
     .field label {
       display: block;
       font-size: 12px;
       color: #4b5563;
       margin-bottom: 4px;
     }
+
     .field input {
       width: 100%;
       box-sizing: border-box;
@@ -47,20 +53,24 @@
       border: 1px solid #d1d5db;
       font-size: 13px;
     }
+
     .field input[readonly] {
       background: #f3f4f6;
       color: #6b7280;
     }
+
     .hint {
       font-size: 11px;
       color: #9ca3af;
       margin-top: 2px;
     }
+
     .buttons {
       margin-top: 16px;
       display: flex;
       gap: 8px;
     }
+
     .btn {
       flex: 1;
       padding: 9px 12px;
@@ -69,24 +79,30 @@
       font-size: 13px;
       cursor: pointer;
     }
+
     .btn-primary {
       background: #0369a1;
       color: #ffffff;
     }
+
     .btn-secondary {
       background: #e5e7eb;
       color: #374151;
     }
+
     .message {
       margin-top: 12px;
       font-size: 12px;
     }
+
     .message.success {
       color: #16a34a;
     }
+
     .message.error {
       color: #dc2626;
     }
+
     .readonly-tag {
       display: inline-block;
       font-size: 10px;
@@ -95,6 +111,13 @@
       padding: 2px 6px;
       border-radius: 999px;
       margin-left: 6px;
+    }
+
+    a.link-inline {
+      font-size: 11px;
+      color: #2563eb;
+      text-decoration: underline;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -105,12 +128,18 @@
 
     <div id="form-area" style="display:none;">
       <div class="field">
-        <label>Run No <span class="readonly-tag">อ่านอย่างเดียว</span></label>
+        <label>
+          Run No
+          <span class="readonly-tag">อ่านอย่างเดียว</span>
+        </label>
         <input type="text" id="runNo" readonly />
       </div>
 
       <div class="field">
-        <label>บริษัท (Receiver) <span class="readonly-tag">อ่านอย่างเดียว</span></label>
+        <label>
+          บริษัท (Receiver)
+          <span class="readonly-tag">อ่านอย่างเดียว</span>
+        </label>
         <input type="text" id="receiverName" readonly />
       </div>
 
@@ -132,14 +161,23 @@
       </div>
 
       <div class="field">
-        <label>ลิงก์ไฟล์ (เปิดดูสลิป)</label>
+        <label>
+          ลิงก์ไฟล์ (เปิดดูสลิป)
+          <span class="readonly-tag">อ่านอย่างเดียว</span>
+        </label>
         <input type="text" id="fileUrl" readonly />
-        <div class="hint">สามารถ copy URL เพื่อเปิดดูสลิปได้</div>
+        <div class="hint">
+          สามารถคัดลอก URL ไปเปิดดูสลิปใน browser ได้
+        </div>
       </div>
 
       <div class="buttons">
-        <button class="btn btn-secondary" type="button" id="btnCancel">ยกเลิก</button>
-        <button class="btn btn-primary" type="button" id="btnSave">บันทึก</button>
+        <button class="btn btn-secondary" type="button" id="btnCancel">
+          ยกเลิก
+        </button>
+        <button class="btn btn-primary" type="button" id="btnSave">
+          บันทึก
+        </button>
       </div>
 
       <div id="message" class="message"></div>
@@ -149,6 +187,7 @@
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
+    // 🔧 TODO: แก้สองค่านี้ให้เป็นของจริง
     const LIFF_ID = '2009213238-f1ncr2hm';
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
 
@@ -156,6 +195,7 @@
       const params = {};
       const qs = window.location.search.substring(1).split("&");
       qs.forEach(p => {
+        if (!p) return;
         const [k, v] = p.split("=");
         if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || "");
       });
@@ -175,7 +215,13 @@
       const url = `${BACKEND_URL}?action=get&runNo=${encodeURIComponent(runNo)}&receiver=${encodeURIComponent(receiver)}`;
 
       const res = await fetch(url, { method: 'GET' });
-      const json = await res.json();
+      let json;
+      try {
+        json = await res.json();
+      } catch (err) {
+        throw new Error('ไม่สามารถอ่านข้อมูลจากเซิร์ฟเวอร์ได้');
+      }
+
       if (!json.ok) {
         throw new Error(json.error || 'โหลดข้อมูลไม่สำเร็จ');
       }
@@ -223,12 +269,25 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const json = await res.json();
+
+      let json;
+      try {
+        json = await res.json();
+      } catch (err) {
+        showMessage('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+        return;
+      }
 
       if (json.ok) {
         showMessage('บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
-        // ถ้าอยากให้ปิดหน้า LIFF หลังบันทึก:
-        // if (liff.isInClient()) liff.closeWindow();
+        // ถ้าอยากให้ปิดหน้าต่างหลังบันทึก และอยู่ใน LINE App:
+        try {
+          if (liff.isInClient()) {
+            setTimeout(() => liff.closeWindow(), 800);
+          }
+        } catch (e) {
+          // ถ้าปิดไม่ได้ก็ไม่เป็นไร
+        }
       } else {
         showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
       }
@@ -236,6 +295,8 @@
 
     async function main() {
       const subtitle = document.getElementById('subtitle');
+
+      // 1) init LIFF
       try {
         await liff.init({ liffId: LIFF_ID });
       } catch (err) {
@@ -244,6 +305,7 @@
         return;
       }
 
+      // 2) อ่าน runNo + receiver จาก query string
       const params = getQueryParams();
       const runNo = params.runNo;
       const receiver = params.receiver;
@@ -253,13 +315,16 @@
         return;
       }
 
+      // 3) โหลดข้อมูลจาก Backend
       try {
         await loadData(runNo, receiver);
       } catch (err) {
         console.error(err);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (err.message || err);
+        return;
       }
 
+      // 4) bind ปุ่ม
       document.getElementById('btnSave').addEventListener('click', () => {
         saveData().catch(err => {
           console.error(err);
@@ -269,8 +334,12 @@
 
       document.getElementById('btnCancel').addEventListener('click', () => {
         showMessage('ยกเลิกการแก้ไข (ข้อมูลยังไม่ถูกเปลี่ยน)', 'error');
-        if (liff.isInClient()) {
-          liff.closeWindow();
+        try {
+          if (liff.isInClient()) {
+            liff.closeWindow();
+          }
+        } catch (e) {
+          // ถ้าปิดไม่ได้ก็เฉย ๆ
         }
       });
     }
