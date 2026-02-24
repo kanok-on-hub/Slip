@@ -6,15 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
   <style>
     :root {
-      --primary: #2563EB;
-      --primary-hover: #1D4ED8;
+      --primary: #111827;       /* สีดำอมเทา (เข้าธีมบอท) */
+      --primary-hover: #000000; /* สีดำสนิทตอนกด */
       --bg-color: #F3F4F6;
       --card-bg: #FFFFFF;
       --text-main: #1F2937;
       --text-muted: #6B7280;
       --border-light: #E5E7EB;
-      --accent-bg: #EFF6FF;
-      --accent-text: #1E3A8A;
+      --accent-bg: #F9FAFB;     /* สีเทาอ่อนสุดแทนสีฟ้า */
+      --accent-text: #111827;   /* สีตัวหนังสือในกล่องเป็นสีเทาเข้ม */
       --danger: #EF4444;
       --success: #10B981;
     }
@@ -67,7 +67,7 @@
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 24px;
-      border: 1px solid #DBEAFE;
+      border: 1px solid var(--border-light); /* ใช้ขอบเทาแทนขอบฟ้า */
     }
 
     .info-row {
@@ -83,7 +83,7 @@
     }
 
     .info-label {
-      color: #3B82F6;
+      color: var(--text-muted); /* เปลี่ยนป้ายกำกับเป็นสีเทา */
       font-weight: 600;
     }
 
@@ -121,7 +121,7 @@
       outline: none;
       border-color: var(--primary);
       background-color: #FFFFFF;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.1); /* ขอบเรืองแสงสีดำจางๆ ตอนพิมพ์ */
     }
 
     .field input::placeholder {
@@ -188,7 +188,7 @@
     .btn-primary {
       background: var(--primary);
       color: #FFFFFF;
-      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 4px 6px -1px rgba(17, 24, 39, 0.2);
     }
 
     .btn-secondary {
@@ -370,7 +370,6 @@
       };
 
       try {
-        // ❗❗ จุดที่แก้: ตัด headers: { 'Content-Type': 'application/json' } ออก
         const res = await fetch(`${BACKEND_URL}?action=update`, {
           method: 'POST',
           body: JSON.stringify(payload)
@@ -460,7 +459,7 @@
                               spacing: 'sm',
                               contents: [
                                 { type: 'text', text: 'Amount', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: amt + ' ฿', color: '#2563EB', size: 'sm', flex: 4, weight: 'bold', wrap: true }
+                                { type: 'text', text: amt + ' ฿', color: '#111827', size: 'sm', flex: 4, weight: 'bold', wrap: true }
                               ]
                             }
                           ]
