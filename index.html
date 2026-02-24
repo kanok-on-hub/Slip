@@ -38,7 +38,6 @@
       box-sizing: border-box;
     }
 
-    /* Header Section */
     .header-section {
       text-align: center;
       margin-bottom: 24px;
@@ -63,7 +62,6 @@
       line-height: 1.5;
     }
 
-    /* Readonly Info Card */
     .info-card {
       background: var(--accent-bg);
       border-radius: 12px;
@@ -95,7 +93,6 @@
       text-align: right;
     }
 
-    /* Form Fields */
     .field {
       margin-bottom: 16px;
     }
@@ -131,7 +128,6 @@
       color: #9CA3AF;
     }
 
-    /* ซ่อน input แบบ readonly เพราะเราย้ายไปโชว์ใน info-card แทนแล้ว */
     input.hidden-input {
       display: none;
     }
@@ -145,7 +141,6 @@
       gap: 4px;
     }
 
-    /* File Link Style */
     .file-link-wrapper {
       background: #F9FAFB;
       border: 1px dashed #D1D5DB;
@@ -164,12 +159,11 @@
       color: var(--text-muted);
       width: 100%;
     }
-    
+
     .file-link-wrapper input:focus {
       box-shadow: none;
     }
 
-    /* Buttons */
     .buttons {
       margin-top: 28px;
       display: flex;
@@ -229,22 +223,20 @@
 </head>
 <body>
   <div class="container">
-    
     <div class="header-section">
       <div class="header-icon">✏️</div>
-      <h1>แก้ไขข้อมูล</h1>
+      <h1>แก้ไขข้อมูลการรับเงิน</h1>
       <div class="subtitle" id="subtitle">กำลังโหลดข้อมูลจากระบบ...</div>
     </div>
 
     <div id="form-area" style="display:none;">
-      
       <div class="info-card">
         <div class="info-row">
           <span class="info-label">Run No.</span>
           <span class="info-value" id="displayRunNo">-</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Company</span>
+          <span class="info-label">ชื่อบริษัท (Receiver)</span>
           <span class="info-value" id="displayReceiverName">-</span>
         </div>
       </div>
@@ -258,7 +250,7 @@
       </div>
 
       <div class="field">
-        <label>📅 วันที่รับเงิน (Date)</label>
+        <label>📅 วันที่รับเงิน (Transaction Date)</label>
         <input type="text" id="transactionDate" placeholder="ex. 24/2/2026" />
         <div class="hint">💡 โปรดใช้รูปแบบ วัน/เดือน/ปี (ค.ศ.)</div>
       </div>
@@ -288,7 +280,7 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // 🔧 ค่า 2 ตัวนี้ให้ตรงกับระบบจริงของคุณ
+    // 🔧 TODO: ตั้งค่าให้ตรงระบบจริง
     const LIFF_ID = '2009213238-f1ncr2hm';
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
 
@@ -332,8 +324,7 @@
       }
 
       const data = json.data || {};
-      
-      // อัปเดตตัวแปรสำหรับ Backend
+
       document.getElementById('runNo').value = data.runNo || runNo;
       document.getElementById('receiverName').value = data.receiverName || receiver;
       document.getElementById('transactionDate').value = data.transactionDate || '';
@@ -341,7 +332,6 @@
       document.getElementById('senderName').value = data.senderName || '';
       document.getElementById('fileUrl').value = data.fileUrl || '';
 
-      // อัปเดต UI (Display เฉพาะส่วน Info Card)
       document.getElementById('displayRunNo').textContent = data.runNo || runNo;
       document.getElementById('displayReceiverName').textContent = data.receiverName || receiver;
 
@@ -367,7 +357,7 @@
       const btnSave = document.getElementById('btnSave');
       btnSave.textContent = 'กำลังบันทึก...';
       btnSave.disabled = true;
-      showMessage('', ''); // clear message
+      showMessage('', '');
 
       const payload = {
         runNo,
@@ -378,9 +368,9 @@
       };
 
       try {
-        // ✅ ตัด headers: { 'Content-Type': 'application/json' } ออก
         const res = await fetch(`${BACKEND_URL}?action=update`, {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
@@ -388,11 +378,108 @@
 
         if (json.ok) {
           showMessage('บันทึกข้อมูลเรียบร้อยแล้ว ✅', 'success');
+
+          // ✅ ส่ง Flex ใหม่เข้าแชทให้เลย
           try {
             if (liff.isInClient()) {
+              const flexMessage = {
+                type: 'flex',
+                altText: 'อัปเดตข้อมูลรับเงินเรียบร้อยแล้ว',
+                contents: {
+                  type: 'bubble',
+                  size: 'kilo',
+                  body: {
+                    type: 'box',
+                    layout: 'vertical',
+                    paddingAll: '20px',
+                    contents: [
+                      { type: 'text', text: '✅', size: '5xl', align: 'center', margin: 'md' },
+                      {
+                        type: 'text',
+                        text: 'อัปเดตข้อมูลเรียบร้อยแล้ว',
+                        weight: 'bold',
+                        size: 'xl',
+                        align: 'center',
+                        margin: 'md',
+                        color: '#1F2937'
+                      },
+                      {
+                        type: 'text',
+                        text: 'ระบบได้แก้ไขข้อมูลการรับเงินตามที่คุณปรับแล้วค่ะ',
+                        size: 'sm',
+                        color: '#10B981',
+                        align: 'center',
+                        margin: 'sm',
+                        wrap: true
+                      },
+                      { type: 'separator', margin: 'lg', color: '#F3F4F6' },
+                      {
+                        type: 'box',
+                        layout: 'vertical',
+                        margin: 'lg',
+                        spacing: 'sm',
+                        backgroundColor: '#F9FAFB',
+                        cornerRadius: '8px',
+                        paddingAll: '12px',
+                        contents: [
+                          {
+                            type: 'box',
+                            layout: 'baseline',
+                            spacing: 'sm',
+                            contents: [
+                              { type: 'text', text: 'Run No', color: '#9CA3AF', size: 'xs', flex: 2 },
+                              { type: 'text', text: runNo, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
+                            ]
+                          },
+                          {
+                            type: 'box',
+                            layout: 'baseline',
+                            spacing: 'sm',
+                            contents: [
+                              { type: 'text', text: 'Company', color: '#9CA3AF', size: 'xs', flex: 2 },
+                              { type: 'text', text: receiverName, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
+                            ]
+                          },
+                          {
+                            type: 'box',
+                            layout: 'baseline',
+                            spacing: 'sm',
+                            contents: [
+                              { type: 'text', text: 'Customer', color: '#9CA3AF', size: 'xs', flex: 2 },
+                              { type: 'text', text: senderName || '-', color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
+                            ]
+                          },
+                          {
+                            type: 'box',
+                            layout: 'baseline',
+                            spacing: 'sm',
+                            contents: [
+                              { type: 'text', text: 'Date', color: '#9CA3AF', size: 'xs', flex: 2 },
+                              { type: 'text', text: transactionDate, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
+                            ]
+                          },
+                          {
+                            type: 'box',
+                            layout: 'baseline',
+                            spacing: 'sm',
+                            contents: [
+                              { type: 'text', text: 'Amount', color: '#9CA3AF', size: 'xs', flex: 2 },
+                              { type: 'text', text: amount + ' ฿', color: '#2563EB', size: 'sm', flex: 4, weight: 'bold', wrap: true }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              };
+
+              await liff.sendMessages([flexMessage]);
               setTimeout(() => liff.closeWindow(), 1200);
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error('sendMessages error:', e);
+          }
         } else {
           showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
         }
