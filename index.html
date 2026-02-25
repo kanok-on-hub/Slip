@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #f3f4f6;
+      /* คุมโทน ดำ-เทา-ขาว */
+      --bg: #f9fafb;
       --card-bg: #ffffff;
-      --primary: #111827;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --border: #e5e7eb;
+      --primary: #111827;       /* ดำสนิท */
+      --secondary: #4b5563;     /* เทาเข้ม */
+      --border: #e5e7eb;        /* เทาอ่อน */
       --text-main: #111827;
       --text-muted: #6b7280;
       --radius-lg: 16px;
@@ -24,130 +24,180 @@
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #e5f2ff, #f9fafb 45%, #f3f4f6);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
       color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px 16px;
     }
 
     .page {
-      min-height: 100vh;
-      padding: 16px;
+      width: 100%;
+      max-width: 520px;
       display: flex;
-      justify-content: center;
-      align-items: stretch;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .shell {
-      width: 100%;
-      max-width: 520px;
-      background: rgba(255, 255, 255, 0.9);
+      background: var(--card-bg);
       border-radius: 24px;
-      box-shadow:
-        0 20px 40px rgba(15, 23, 42, 0.12),
-        0 0 0 1px rgba(148, 163, 184, 0.15);
-      padding: 18px 16px 16px;
-      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
+      border: 1px solid var(--border);
     }
 
+    /* --- Header --- */
     .header {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .header-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 30% 0, #fefce8, #fee2e2);
+      background: #f3f4f6;
+      border: 1px solid var(--border);
       font-size: 22px;
     }
 
     .header-text-main {
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.01em;
+      letter-spacing: -0.02em;
     }
 
     .header-text-sub {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-muted);
+      margin-top: 2px;
     }
 
+    /* --- Pills & Tags --- */
     .mode-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 999px;
-      background: #eef2ff;
-      font-size: 11px;
-      color: #4f46e5;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--primary);
       font-weight: 600;
+      align-self: flex-start;
     }
 
+    /* --- Status Bar --- */
+    .status-bar {
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      background: #f3f4f6;
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #9ca3af;
+    }
+
+    /* Success State */
+    .status-bar.success {
+      background: #f0fdf4;
+      color: #166534;
+      border-color: #dcfce7;
+    }
+    .status-dot.success {
+      background: #22c55e;
+    }
+
+    /* Error State */
+    .status-bar.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fee2e2;
+    }
+    .status-dot.error {
+      background: #ef4444;
+    }
+
+    /* --- Cards & Fields --- */
     .card {
       background: var(--card-bg);
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
-      padding: 14px 14px 12px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .card-title-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 10px;
+      margin-bottom: 4px;
     }
 
     .card-title {
       font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-weight: 700;
       color: var(--text-muted);
+      letter-spacing: 0.05em;
     }
 
     .badge-soft {
       font-size: 11px;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: #ecfeff;
-      color: #0f766e;
-      border: 1px solid #ccfbf1;
+      background: #f3f4f6;
+      color: var(--primary);
+      border: 1px solid var(--border);
+      font-weight: 600;
     }
 
     .fields {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
 
     .field {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .field-label-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
     }
 
     .field-label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text-main);
     }
@@ -158,40 +208,48 @@
     }
 
     .field-value {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-main);
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       word-break: break-all;
     }
 
     .field-value a {
-      color: #2563eb;
-      text-decoration: none;
-      font-size: 12px;
-    }
-
-    .field-value a:hover {
+      color: var(--primary);
       text-decoration: underline;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      margin-left: 10px;
     }
 
+    /* --- Inputs --- */
     .input {
       border-radius: var(--radius-md);
       border: 1px solid var(--border);
-      padding: 7px 10px;
-      font-size: 13px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
       outline: none;
       width: 100%;
-      background: #f9fafb;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease,
-        background 0.15s ease;
+      background: #ffffff;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .input::placeholder {
+      color: #9ca3af;
     }
 
     .input:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.12);
-      background: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
     }
 
     .input[readonly] {
@@ -200,140 +258,106 @@
     }
 
     textarea.input {
-      min-height: 72px;
+      min-height: 80px;
       resize: vertical;
     }
 
+    /* --- Info Pills --- */
     .pill-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .pill {
       font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #f3f4f6;
       color: var(--text-muted);
+      border: 1px solid var(--border);
     }
 
     .pill strong {
       color: var(--text-main);
     }
 
+    /* --- Buttons --- */
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-top: 4px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .btn {
-      border-radius: 999px;
+      border-radius: var(--radius-md);
       border: none;
-      padding: 9px 14px;
+      padding: 12px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: transform 0.06s ease, box-shadow 0.06s ease,
-        background 0.12s ease;
+      transition: all 0.15s ease;
+      font-family: inherit;
     }
 
     .btn-primary {
       background: var(--primary);
       color: #ffffff;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 4px 6px rgba(17, 24, 39, 0.1);
     }
 
     .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.3);
+      transform: scale(0.98);
+      box-shadow: 0 2px 4px rgba(17, 24, 39, 0.1);
     }
 
     .btn-outline {
-      background: #f9fafb;
+      background: #ffffff;
       color: var(--text-main);
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 3px 8px rgba(148, 163, 184, 0.3);
+      border: 1px solid var(--border);
     }
 
     .btn-outline:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 5px rgba(148, 163, 184, 0.4);
+      background: #f9fafb;
+      transform: scale(0.98);
     }
 
     .btn-icon {
       font-size: 16px;
     }
 
+    /* --- Footer --- */
     .footer-note {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: 2px;
-    }
-
-    .status-bar {
-      margin-top: 2px;
       font-size: 11px;
-      padding: 7px 9px;
-      border-radius: 10px;
-      background: #eff6ff;
-      color: #1d4ed8;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
-    .status-bar.error {
-      background: #fef2f2;
-      color: #b91c1c;
-    }
-
-    .status-dot.error {
-      background: #ef4444;
+      color: #9ca3af;
+      text-align: center;
+      margin-top: 10px;
+      padding: 0 10px;
     }
 
     .tag-status {
       font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #fee2e2;
-      color: #b91c1c;
-      border: 1px solid #fecaca;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
     }
 
     .hidden {
       display: none !important;
-    }
-
-    @media (max-width: 480px) {
-      .shell {
-        border-radius: 18px;
-        box-shadow:
-          0 12px 26px rgba(15, 23, 42, 0.18),
-          0 0 0 1px rgba(148, 163, 184, 0.1);
-      }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <div class="shell">
-      <!-- Header -->
       <div class="header">
         <div class="header-icon" id="headerIcon">
           💸
@@ -346,19 +370,17 @@
         </div>
       </div>
 
-      <!-- Mode pill -->
       <div class="mode-pill" id="modePill">
         <span id="modeEmoji">💳</span>
         <span id="modeText">Payment Collection</span>
       </div>
 
-      <!-- Status bar -->
       <div class="status-bar" id="statusBar">
         <span class="status-dot" id="statusDot"></span>
         <span id="statusText">กำลังโหลดข้อมูลจากระบบ...</span>
       </div>
 
-      <!-- PAYMENT SECTION -->
+      <!-- PAYMENT / ADVANCE -->
       <div id="paymentSection" class="card hidden">
         <div class="card-title-row">
           <div class="card-title">PAYMENT SUMMARY</div>
@@ -366,7 +388,6 @@
         </div>
 
         <div class="fields">
-          <!-- File Info -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Slip File</span>
@@ -376,74 +397,43 @@
             </div>
           </div>
 
-          <!-- Receiver / Company -->
           <div class="field" id="paymentFieldCompany">
             <div class="field-label-row">
               <span class="field-label">Company (Receiver)</span>
               <span class="field-hint">AVT / ACC / BDI</span>
             </div>
-            <input
-              id="paymentCompany"
-              class="input"
-              type="text"
-              placeholder="เช่น AVT"
-            />
+            <input id="paymentCompany" class="input" type="text" placeholder="เช่น AVT" />
           </div>
 
-          <!-- Customer -->
           <div class="field" id="paymentFieldCustomer">
             <div class="field-label-row">
               <span class="field-label">Customer Name</span>
               <span class="field-hint">ชื่อผู้โอน / ลูกค้า</span>
             </div>
-            <input
-              id="paymentCustomer"
-              class="input"
-              type="text"
-              placeholder="เช่น ADecor"
-            />
+            <input id="paymentCustomer" class="input" type="text" placeholder="เช่น ADecor" />
           </div>
 
-          <!-- Date -->
           <div class="field" id="paymentFieldDate">
             <div class="field-label-row">
               <span class="field-label">Transaction Date</span>
               <span class="field-hint">รูปแบบ: 24/2/2026</span>
             </div>
-            <input
-              id="paymentDate"
-              class="input"
-              type="text"
-              placeholder="เช่น 24/2/2026"
-            />
+            <input id="paymentDate" class="input" type="text" placeholder="เช่น 24/2/2026" />
           </div>
 
-          <!-- Amount -->
           <div class="field" id="paymentFieldAmount">
             <div class="field-label-row">
               <span class="field-label">Amount (THB)</span>
             </div>
-            <input
-              id="paymentAmount"
-              class="input"
-              type="number"
-              inputmode="decimal"
-              step="0.01"
-              placeholder="เช่น 5999"
-            />
+            <input id="paymentAmount" class="input" type="number" inputmode="decimal" step="0.01" placeholder="เช่น 5999" />
           </div>
 
-          <!-- Advance Note -->
           <div class="field hidden" id="paymentFieldNote">
             <div class="field-label-row">
               <span class="field-label">Advance Note</span>
               <span class="field-hint">ระบุรายละเอียดการจ่ายแทน / จ่ายสำรอง</span>
             </div>
-            <textarea
-              id="paymentNote"
-              class="input"
-              placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"
-            ></textarea>
+            <textarea id="paymentNote" class="input" placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"></textarea>
           </div>
         </div>
 
@@ -464,7 +454,7 @@
         </div>
       </div>
 
-      <!-- CLAIM SECTION -->
+      <!-- CLAIM -->
       <div id="claimSection" class="card hidden">
         <div class="card-title-row">
           <div class="card-title">CLAIM REQUEST SUMMARY</div>
@@ -472,7 +462,6 @@
         </div>
 
         <div class="fields">
-          <!-- File Info -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Claim Form (PDF)</span>
@@ -482,56 +471,35 @@
             </div>
           </div>
 
-          <!-- Company -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Company</span>
               <span class="field-hint">บริษัทที่เป็นพนักงาน</span>
             </div>
-            <input
-              id="claimCompany"
-              class="input"
-              type="text"
-              placeholder="เช่น AVT / ACC / BDI"
-            />
+            <input id="claimCompany" class="input" type="text" placeholder="เช่น AVT / ACC / BDI" />
           </div>
 
-          <!-- Period -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Claim Period</span>
               <span class="field-hint">เช่น 02/2026</span>
             </div>
-            <input
-              id="claimPeriod"
-              class="input"
-              type="text"
-              placeholder="เช่น 02/2026"
-            />
+            <input id="claimPeriod" class="input" type="text" placeholder="เช่น 02/2026" />
           </div>
 
-          <!-- Amount -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Amount (THB)</span>
             </div>
-            <input
-              id="claimAmount"
-              class="input"
-              type="number"
-              inputmode="decimal"
-              step="0.01"
-              placeholder="เช่น 1250"
-            />
+            <input id="claimAmount" class="input" type="number" inputmode="decimal" step="0.01" placeholder="เช่น 1250" />
           </div>
 
-          <!-- Status (readonly display) -->
           <div class="field">
             <div class="field-label-row">
               <span class="field-label">Status</span>
             </div>
-            <div class="field-value">
-              <span id="claimStatusText">DRAFT</span>
+            <div class="field-value" style="background: #ffffff; border: 1px solid var(--border);">
+              <span id="claimStatusText" style="font-weight: 600;">DRAFT</span>
               <span id="claimStatusTag" class="tag-status hidden">SUBMITTED</span>
             </div>
           </div>
@@ -553,8 +521,8 @@
           </button>
         </div>
 
-        <div class="footer-note">
-          การเปลี่ยนสถานะเป็น SUBMITTED ทำผ่านปุ่มยืนยันใน LINE Chat
+        <div class="footer-note" style="margin-top: 0;">
+          * การเปลี่ยนสถานะเป็น SUBMITTED ทำผ่านปุ่มยืนยันใน LINE Chat
         </div>
       </div>
 
@@ -586,17 +554,22 @@
       return params;
     }
 
+    // ฟังก์ชันจัดการ Status Bar (เทา = ปกติ, เขียว = สำเร็จ, แดง = เออเร่อ)
     function setStatus(message, isError = false) {
       const bar = document.getElementById('statusBar');
       const dot = document.getElementById('statusDot');
       const text = document.getElementById('statusText');
       text.textContent = message || '';
+      
+      bar.className = 'status-bar';
+      dot.className = 'status-dot';
+
       if (isError) {
         bar.classList.add('error');
         dot.classList.add('error');
-      } else {
-        bar.classList.remove('error');
-        dot.classList.remove('error');
+      } else if (message.includes('เรียบร้อย') || message.includes('✔')) {
+        bar.classList.add('success');
+        dot.classList.add('success');
       }
     }
 
@@ -605,7 +578,6 @@
       const headerIcon = document.getElementById('headerIcon');
       const headerTitle = document.getElementById('headerTitle');
       const headerSubtitle = document.getElementById('headerSubtitle');
-      const modePill = document.getElementById('modePill');
       const modeEmoji = document.getElementById('modeEmoji');
       const modeText = document.getElementById('modeText');
       const paymentSection = document.getElementById('paymentSection');
@@ -622,7 +594,7 @@
       } else {
         headerIcon.textContent = '📄';
         headerTitle.textContent = 'Claim Editor';
-        headerSubtitle.textContent = 'แก้ไขข้อมูลใบเบิก (PDF) ก่อนยืนยัน';
+        headerSubtitle.textContent = 'แก้ไขข้อมูลฟอร์มก่อนกดยืนยัน';
         modeEmoji.textContent = '📑';
         modeText.textContent = 'Claim Request';
         paymentSection.classList.add('hidden');
@@ -672,7 +644,6 @@
 
       if (mode === 'ADVANCE') {
         modePill.textContent = 'Advance';
-        // ซ่อนฟิลด์ปกติ แสดง Note อย่างเดียว
         fieldCompany.classList.add('hidden');
         fieldCustomer.classList.add('hidden');
         fieldDate.classList.add('hidden');
@@ -722,27 +693,12 @@
       const isAdvance = (modeText || '').toUpperCase() === 'ADVANCE';
 
       if (!isAdvance) {
-        if (!company) {
-          setStatus('กรุณาระบุ Company (Receiver) ให้ครบก่อนบันทึก', true);
-          return;
-        }
-        if (!customer) {
-          setStatus('กรุณาระบุ Customer Name ให้ครบก่อนบันทึก', true);
-          return;
-        }
-        if (!dateText) {
-          setStatus('กรุณาระบุ Transaction Date ให้ครบก่อนบันทึก', true);
-          return;
-        }
-        if (!amount) {
-          setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true);
-          return;
-        }
+        if (!company) { setStatus('กรุณาระบุ Company (Receiver) ให้ครบก่อนบันทึก', true); return; }
+        if (!customer) { setStatus('กรุณาระบุ Customer Name ให้ครบก่อนบันทึก', true); return; }
+        if (!dateText) { setStatus('กรุณาระบุ Transaction Date ให้ครบก่อนบันทึก', true); return; }
+        if (!amount) { setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true); return; }
       } else {
-        if (!note) {
-          setStatus('กรุณาระบุ Note สำหรับ Advance ก่อนบันทึก', true);
-          return;
-        }
+        if (!note) { setStatus('กรุณาระบุ Note สำหรับ Advance ก่อนบันทึก', true); return; }
       }
 
       setStatus('กำลังบันทึกข้อมูล Payment...', false);
@@ -765,19 +721,12 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) {
-          throw new Error('HTTP ' + res.status);
-        }
-
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
-        if (!json.success) {
-          throw new Error(json.message || 'Update failed');
-        }
+        if (!json.success) throw new Error(json.message || 'Update failed');
 
         setStatus('บันทึก Payment เรียบร้อยแล้ว ✔', false);
-        if (json.data) {
-          bindPaymentForm(json.data);
-        }
+        if (json.data) bindPaymentForm(json.data);
       } catch (err) {
         console.error('savePayment error', err);
         setStatus('บันทึกไม่สำเร็จ: ' + (err.message || 'Unknown error'), true);
@@ -844,18 +793,9 @@
       const period = document.getElementById('claimPeriod').value.trim();
       const amount = document.getElementById('claimAmount').value.trim();
 
-      if (!company) {
-        setStatus('กรุณาระบุ Company ให้ครบก่อนบันทึก', true);
-        return;
-      }
-      if (!period) {
-        setStatus('กรุณาระบุ Claim Period ให้ครบก่อนบันทึก', true);
-        return;
-      }
-      if (!amount) {
-        setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true);
-        return;
-      }
+      if (!company) { setStatus('กรุณาระบุ Company ให้ครบก่อนบันทึก', true); return; }
+      if (!period) { setStatus('กรุณาระบุ Claim Period ให้ครบก่อนบันทึก', true); return; }
+      if (!amount) { setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true); return; }
 
       setStatus('กำลังบันทึกข้อมูล Claim...', false);
 
@@ -874,19 +814,12 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) {
-          throw new Error('HTTP ' + res.status);
-        }
-
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const json = await res.json();
-        if (!json.success) {
-          throw new Error(json.message || 'Update failed');
-        }
+        if (!json.success) throw new Error(json.message || 'Update failed');
 
         setStatus('บันทึก Claim เรียบร้อยแล้ว ✔', false);
-        if (json.data) {
-          bindClaimForm(json.data);
-        }
+        if (json.data) bindClaimForm(json.data);
       } catch (err) {
         console.error('saveClaim error', err);
         setStatus('บันทึกไม่สำเร็จ: ' + (err.message || 'Unknown error'), true);
@@ -900,32 +833,23 @@
       state.runNo = params.runNo || '';
       state.receiver = params.receiver || '';
 
-      // mode priority:
-      // 1) ถ้ามี mode=claim → claim
-      // 2) ถ้ามี mode=payment → payment
-      // 3) ถ้าไม่มี receiver เลย → claim
-      // 4) default → payment
-      const modeParam = (params.mode || params.bot || '').toLowerCase();
+      // ใช้ page เป็นตัวกำหนดหน้า (payment / advance / claim)
+      const page = (params.page || '').toLowerCase();
+      const modeParam = (params.mode || params.bot || '').toLowerCase(); // เผื่อมีลิงก์เก่า
+
       let mode = 'payment';
-      if (modeParam === 'claim') mode = 'claim';
-      else if (modeParam === 'payment') mode = 'payment';
-      else if (!state.receiver) mode = 'claim';
+      if (page === 'claim' || page === 'travel' || modeParam === 'claim' || modeParam === 'travel') {
+        mode = 'claim';
+      } else {
+        mode = 'payment'; // payment / advance / default
+      }
 
       setMode(mode);
 
-      // bind listeners
-      document
-        .getElementById('btnSavePayment')
-        .addEventListener('click', savePayment);
-      document
-        .getElementById('btnResetPayment')
-        .addEventListener('click', resetPaymentForm);
-      document
-        .getElementById('btnSaveClaim')
-        .addEventListener('click', saveClaim);
-      document
-        .getElementById('btnResetClaim')
-        .addEventListener('click', resetClaimForm);
+      document.getElementById('btnSavePayment').addEventListener('click', savePayment);
+      document.getElementById('btnResetPayment').addEventListener('click', resetPaymentForm);
+      document.getElementById('btnSaveClaim').addEventListener('click', saveClaim);
+      document.getElementById('btnResetClaim').addEventListener('click', resetClaimForm);
 
       if (!state.runNo) {
         setStatus('ไม่พบหมายเลข Run No. ใน URL โปรดเปิดจากปุ่มใน LINE อีกครั้ง', true);
@@ -935,43 +859,33 @@
       try {
         if (state.mode === 'payment') {
           setStatus('กำลังโหลดข้อมูล Payment...', false);
-          const url =
-            PAYMENT_API_URL +
-            '?action=getPayment&runNo=' +
-            encodeURIComponent(state.runNo) +
-            '&receiver=' +
-            encodeURIComponent(state.receiver || '');
+          const url = PAYMENT_API_URL +
+            '?action=getPayment' +
+            '&runNo=' + encodeURIComponent(state.runNo) +
+            '&receiver=' + encodeURIComponent(state.receiver || '');
+
           const res = await fetch(url, { method: 'GET' });
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const json = await res.json();
-          if (!json.success || !json.data) {
-            throw new Error(json.message || 'ไม่พบข้อมูล Payment');
-          }
+          if (!json.success || !json.data) throw new Error(json.message || 'ไม่พบข้อมูล Payment');
           bindPaymentForm(json.data);
-          setStatus('โหลดข้อมูล Payment เรียบร้อยแล้ว', false);
+          setStatus('พร้อมสำหรับการแก้ไข', false);
         } else {
           setStatus('กำลังโหลดข้อมูล Claim...', false);
-          const url =
-            CLAIM_API_URL +
-            '?action=getClaim&runNo=' +
-            encodeURIComponent(state.runNo);
+          const url = CLAIM_API_URL +
+            '?action=getClaim' +
+            '&runNo=' + encodeURIComponent(state.runNo);
+
           const res = await fetch(url, { method: 'GET' });
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const json = await res.json();
-          if (!json.success || !json.data) {
-            throw new Error(json.message || 'ไม่พบข้อมูล Claim');
-          }
+          if (!json.success || !json.data) throw new Error(json.message || 'ไม่พบข้อมูล Claim');
           bindClaimForm(json.data);
-          setStatus('โหลดข้อมูล Claim เรียบร้อยแล้ว', false);
+          setStatus('พร้อมสำหรับการแก้ไข', false);
         }
       } catch (err) {
         console.error('init load error', err);
-        setStatus(
-          'โหลดข้อมูลไม่สำเร็จ: ' +
-            (err.message || 'Unknown error') +
-            ' (โปรดเปิดจากปุ่มใน LINE อีกครั้ง)',
-          true
-        );
+        setStatus('โหลดข้อมูลไม่สำเร็จ: ' + (err.message || 'Unknown error') + ' (โปรดเปิดจากปุ่มใน LINE อีกครั้ง)', true);
       }
     }
 
