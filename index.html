@@ -128,6 +128,32 @@
       color: #9CA3AF;
     }
 
+    /* เพิ่มสำหรับ ADVANCE NOTE */
+    .field textarea {
+      width: 100%;
+      min-height: 90px;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-light);
+      font-size: 15px;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      resize: vertical;
+      transition: all 0.2s ease;
+    }
+
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.1);
+    }
+
+    .field textarea::placeholder {
+      color: #9CA3AF;
+    }
+
     input.hidden-input {
       display: none;
     }
@@ -245,21 +271,33 @@
       <input type="text" id="runNo" class="hidden-input" readonly />
       <input type="text" id="receiverName" class="hidden-input" readonly />
 
-      <div class="field">
-        <label>👤 ชื่อลูกค้า (Customer Name)</label>
-        <input type="text" id="senderName" placeholder="ex. ADecor, SCG Home" />
+      <!-- ฟิลด์ปกติ (Customer / Date / Amount) -->
+      <div id="normal-fields">
+        <div class="field">
+          <label>👤 ชื่อลูกค้า (Customer Name)</label>
+          <input type="text" id="senderName" placeholder="ex. ADecor, SCG Home" />
+        </div>
+
+        <div class="field">
+          <label>📅 วันที่รับเงิน (Date)</label>
+          <input type="text" id="transactionDate" placeholder="ex. 24/2/2026" />
+          <div class="hint">💡 โปรดใช้รูปแบบ วัน/เดือน/ปี (ค.ศ.)</div>
+        </div>
+
+        <div class="field">
+          <label>💰 จำนวนเงิน (Amount)</label>
+          <input type="number" id="amount" placeholder="ex. 5999" step="any" />
+          <div class="hint">💡 กรอกเฉพาะตัวเลข ไม่ต้องใส่ลูกน้ำ ( , )</div>
+        </div>
       </div>
 
-      <div class="field">
-        <label>📅 วันที่รับเงิน (Date)</label>
-        <input type="text" id="transactionDate" placeholder="ex. 24/2/2026" />
-        <div class="hint">💡 โปรดใช้รูปแบบ วัน/เดือน/ปี (ค.ศ.)</div>
-      </div>
-
-      <div class="field">
-        <label>💰 จำนวนเงิน (Amount)</label>
-        <input type="number" id="amount" placeholder="ex. 5999" step="any" />
-        <div class="hint">💡 กรอกเฉพาะตัวเลข ไม่ต้องใส่ลูกน้ำ ( , )</div>
+      <!-- ฟิลด์สำหรับ ADVANCE -->
+      <div id="advance-fields" style="display:none;">
+        <div class="field">
+          <label>📝 Note (Advance)</label>
+          <textarea id="advanceNote" placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"></textarea>
+          <div class="hint">💡 กรอกรายละเอียดการจ่ายแทน / จ่ายสำรอง</div>
+        </div>
       </div>
 
       <div class="field">
@@ -327,47 +365,76 @@
 
       const data = json.data || {};
 
+      const isAdvance = (receiver || '').toUpperCase() === 'ADVANCE';
+      document.body.dataset.mode = isAdvance ? 'ADVANCE' : 'NORMAL';
+
+      // ค่า common
       document.getElementById('runNo').value = data.runNo || runNo;
       document.getElementById('receiverName').value = data.receiverName || receiver;
-      document.getElementById('transactionDate').value = data.transactionDate || '';
-      document.getElementById('amount').value = data.amount || '';
-      document.getElementById('senderName').value = data.senderName || '';
       document.getElementById('fileUrl').value = data.fileUrl || '';
 
       document.getElementById('displayRunNo').textContent = data.runNo || runNo;
       document.getElementById('displayReceiverName').textContent = data.receiverName || receiver;
 
+      if (isAdvance) {
+        // ซ่อนฟิลด์ปกติ แสดงฟิลด์ Note
+        document.getElementById('normal-fields').style.display = 'none';
+        document.getElementById('advance-fields').style.display = 'block';
+
+        document.getElementById('advanceNote').value = data.note || '';
+      } else {
+        // ใช้ฟิลด์ปกติ
+        document.getElementById('normal-fields').style.display = 'block';
+        document.getElementById('advance-fields').style.display = 'none';
+
+        document.getElementById('transactionDate').value = data.transactionDate || '';
+        document.getElementById('amount').value = data.amount || '';
+        document.getElementById('senderName').value = data.senderName || '';
+      }
+
       document.getElementById('form-area').style.display = 'block';
     }
 
     async function saveData() {
+      const mode = (document.body.dataset.mode || 'NORMAL').toUpperCase();
       const runNo = document.getElementById('runNo').value.trim();
       const receiverName = document.getElementById('receiverName').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const transactionDate = document.getElementById('transactionDate').value.trim();
-      const senderName = document.getElementById('senderName').value.trim();
-
-      if (!amount) {
-        showMessage('กรุณากรอกจำนวนเงิน', 'error');
-        return;
-      }
-      if (!transactionDate) {
-        showMessage('กรุณากรอกวันที่รับเงิน', 'error');
-        return;
-      }
 
       const btnSave = document.getElementById('btnSave');
-      btnSave.textContent = 'กำลังบันทึก...';
-      btnSave.disabled = true;
       showMessage('', '');
 
-      const payload = {
-        runNo,
-        receiverName,
-        amount,
-        transactionDate,
-        senderName
-      };
+      let payload = { runNo, receiverName, mode };
+
+      if (mode === 'ADVANCE') {
+        const note = document.getElementById('advanceNote').value.trim();
+
+        if (!note) {
+          showMessage('กรุณากรอก Note สำหรับ Advance', 'error');
+          return;
+        }
+
+        payload.note = note;
+      } else {
+        const amount = document.getElementById('amount').value.trim();
+        const transactionDate = document.getElementById('transactionDate').value.trim();
+        const senderName = document.getElementById('senderName').value.trim();
+
+        if (!amount) {
+          showMessage('กรุณากรอกจำนวนเงิน', 'error');
+          return;
+        }
+        if (!transactionDate) {
+          showMessage('กรุณากรอกวันที่รับเงิน', 'error');
+          return;
+        }
+
+        payload.amount = amount;
+        payload.transactionDate = transactionDate;
+        payload.senderName = senderName;
+      }
+
+      btnSave.textContent = 'กำลังบันทึก...';
+      btnSave.disabled = true;
 
       try {
         const res = await fetch(`${BACKEND_URL}?action=update`, {
@@ -397,9 +464,20 @@
           try {
             if (liff.isInClient()) {
               const company = receiverName || '-';
-              const customer = senderName || '-';
-              const date = transactionDate || '-';
-              const amt = amount || '-';
+              let customer = '-';
+              let date = '-';
+              let amt = '-';
+
+              if (mode === 'ADVANCE') {
+                // สำหรับ ADVANCE ใช้ Note แทน Customer / Date / Amount
+                customer = '(Advance)';
+                date = '-';
+                amt = '-';
+              } else {
+                customer = document.getElementById('senderName').value.trim() || '-';
+                date = document.getElementById('transactionDate').value.trim() || '-';
+                amt = document.getElementById('amount').value.trim() || '-';
+              }
 
               await liff.sendMessages([
                 {
@@ -459,7 +537,7 @@
                               spacing: 'sm',
                               contents: [
                                 { type: 'text', text: 'Amount', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: amt + ' ฿', color: '#111827', size: 'sm', flex: 4, weight: 'bold', wrap: true }
+                                { type: 'text', text: (amt ? amt + ' ฿' : '-'), color: '#111827', size: 'sm', flex: 4, weight: 'bold', wrap: true }
                               ]
                             }
                           ]
