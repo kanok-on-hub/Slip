@@ -2,621 +2,980 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>แก้ไขข้อมูลการรับเงิน</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <title>Payment & Claim Editor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --primary: #111827;       /* สีดำอมเทา (เข้าธีมบอท) */
-      --primary-hover: #000000; /* สีดำสนิทตอนกด */
-      --bg-color: #F3F4F6;
-      --card-bg: #FFFFFF;
-      --text-main: #1F2937;
-      --text-muted: #6B7280;
-      --border-light: #E5E7EB;
-      --accent-bg: #F9FAFB;     /* สีเทาอ่อนสุดแทนสีฟ้า */
-      --accent-text: #111827;   /* สีตัวหนังสือในกล่องเป็นสีเทาเข้ม */
-      --danger: #EF4444;
-      --success: #10B981;
+      --bg: #f3f4f6;
+      --card-bg: #ffffff;
+      --primary: #111827;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --border: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
-      padding: 20px 16px;
-      background: var(--bg-color);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #e5f2ff, #f9fafb 45%, #f3f4f6);
       color: var(--text-main);
-      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: 20px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
-      padding: 24px;
-      box-sizing: border-box;
+    .page {
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
     }
 
-    .header-section {
-      text-align: center;
-      margin-bottom: 24px;
+    .shell {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 24px;
+      box-shadow:
+        0 20px 40px rgba(15, 23, 42, 0.12),
+        0 0 0 1px rgba(148, 163, 184, 0.15);
+      padding: 18px 16px 16px;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .header-icon {
-      font-size: 40px;
-      margin-bottom: 12px;
-      display: inline-block;
-    }
-
-    h1 {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0 0 8px;
-      color: var(--text-main);
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .info-card {
-      background: var(--accent-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 24px;
-      border: 1px solid var(--border-light); /* ใช้ขอบเทาแทนขอบฟ้า */
-    }
-
-    .info-row {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-      font-size: 13px;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 0, #fefce8, #fee2e2);
+      font-size: 22px;
     }
 
-    .info-row:last-child {
-      margin-bottom: 0;
+    .header-text-main {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
     }
 
-    .info-label {
-      color: var(--text-muted); /* เปลี่ยนป้ายกำกับเป็นสีเทา */
+    .header-text-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      font-size: 11px;
+      color: #4f46e5;
       font-weight: 600;
     }
 
-    .info-value {
-      color: var(--accent-text);
-      font-weight: 700;
-      text-align: right;
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .badge-soft {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #0f766e;
+      border: 1px solid #ccfbf1;
+    }
+
+    .fields {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .field {
-      margin-bottom: 16px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-
-    .field input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border-light);
-      font-size: 15px;
-      color: var(--text-main);
-      background-color: #FAFAFA;
-      transition: all 0.2s ease;
-    }
-
-    .field input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background-color: #FFFFFF;
-      box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.1); /* ขอบเรืองแสงสีดำจางๆ ตอนพิมพ์ */
-    }
-
-    .field input::placeholder {
-      color: #9CA3AF;
-    }
-
-    /* เพิ่มสำหรับ ADVANCE NOTE */
-    .field textarea {
-      width: 100%;
-      min-height: 90px;
-      box-sizing: border-box;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border-light);
-      font-size: 15px;
-      color: var(--text-main);
-      background-color: #FAFAFA;
-      resize: vertical;
-      transition: all 0.2s ease;
-    }
-
-    .field textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      background-color: #FFFFFF;
-      box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.1);
-    }
-
-    .field textarea::placeholder {
-      color: #9CA3AF;
-    }
-
-    input.hidden-input {
-      display: none;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 6px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 4px;
     }
 
-    .file-link-wrapper {
-      background: #F9FAFB;
-      border: 1px dashed #D1D5DB;
-      border-radius: 12px;
-      padding: 12px;
+    .field-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .field-value {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+
+    .field-value a {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .field-value a:hover {
+      text-decoration: underline;
+    }
+
+    .input {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      background: #f9fafb;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
+    }
+
+    .input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.12);
+      background: #ffffff;
+    }
+
+    .input[readonly] {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    textarea.input {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      color: var(--text-muted);
+    }
+
+    .pill strong {
+      color: var(--text-main);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.06s ease, box-shadow 0.06s ease,
+        background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.3);
+    }
+
+    .btn-outline {
+      background: #f9fafb;
+      color: var(--text-main);
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 3px 8px rgba(148, 163, 184, 0.3);
+    }
+
+    .btn-outline:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(148, 163, 184, 0.4);
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+
+    .footer-note {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    .status-bar {
+      margin-top: 2px;
+      font-size: 11px;
+      padding: 7px 9px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #1d4ed8;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .file-link-wrapper input {
-      border: none;
-      background: transparent;
-      padding: 0;
-      font-size: 13px;
-      color: var(--text-muted);
-      width: 100%;
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
     }
 
-    .file-link-wrapper input:focus {
-      box-shadow: none;
+    .status-bar.error {
+      background: #fef2f2;
+      color: #b91c1c;
     }
 
-    .buttons {
-      margin-top: 28px;
-      display: flex;
-      gap: 12px;
+    .status-dot.error {
+      background: #ef4444;
     }
 
-    .btn {
-      flex: 1;
-      padding: 14px 16px;
-      border-radius: 14px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
+    .tag-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
     }
 
-    .btn:active {
-      transform: scale(0.98);
+    .hidden {
+      display: none !important;
     }
 
-    .btn-primary {
-      background: var(--primary);
-      color: #FFFFFF;
-      box-shadow: 0 4px 6px -1px rgba(17, 24, 39, 0.2);
-    }
-
-    .btn-secondary {
-      background: #E5E7EB;
-      color: #4B5563;
-    }
-
-    .message {
-      margin-top: 16px;
-      font-size: 13px;
-      font-weight: 500;
-      text-align: center;
-      padding: 10px;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .message.show {
-      display: block;
-    }
-
-    .message.success {
-      background: #D1FAE5;
-      color: #065F46;
-    }
-
-    .message.error {
-      background: #FEE2E2;
-      color: #991B1B;
+    @media (max-width: 480px) {
+      .shell {
+        border-radius: 18px;
+        box-shadow:
+          0 12px 26px rgba(15, 23, 42, 0.18),
+          0 0 0 1px rgba(148, 163, 184, 0.1);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header-section">
-      <div class="header-icon">✏️</div>
-      <h1>แก้ไขข้อมูล</h1>
-      <div class="subtitle" id="subtitle">กำลังโหลดข้อมูลจากระบบ...</div>
-    </div>
-
-    <div id="form-area" style="display:none;">
-
-      <div class="info-card">
-        <div class="info-row">
-          <span class="info-label">Run No.</span>
-          <span class="info-value" id="displayRunNo">-</span>
+  <div class="page">
+    <div class="shell">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-icon" id="headerIcon">
+          💸
         </div>
-        <div class="info-row">
-          <span class="info-label">Company</span>
-          <span class="info-value" id="displayReceiverName">-</span>
+        <div>
+          <div class="header-text-main" id="headerTitle">Payment Editor</div>
+          <div class="header-text-sub" id="headerSubtitle">
+            แก้ไขข้อมูลก่อนบันทึกลงระบบ
+          </div>
         </div>
       </div>
 
-      <input type="text" id="runNo" class="hidden-input" readonly />
-      <input type="text" id="receiverName" class="hidden-input" readonly />
+      <!-- Mode pill -->
+      <div class="mode-pill" id="modePill">
+        <span id="modeEmoji">💳</span>
+        <span id="modeText">Payment Collection</span>
+      </div>
 
-      <!-- ฟิลด์ปกติ (Customer / Date / Amount) -->
-      <div id="normal-fields">
-        <div class="field">
-          <label>👤 ชื่อลูกค้า (Customer Name)</label>
-          <input type="text" id="senderName" placeholder="ex. ADecor, SCG Home" />
+      <!-- Status bar -->
+      <div class="status-bar" id="statusBar">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">กำลังโหลดข้อมูลจากระบบ...</span>
+      </div>
+
+      <!-- PAYMENT SECTION -->
+      <div id="paymentSection" class="card hidden">
+        <div class="card-title-row">
+          <div class="card-title">PAYMENT SUMMARY</div>
+          <div id="paymentRunNoBadge" class="badge-soft">Run No. —</div>
         </div>
 
-        <div class="field">
-          <label>📅 วันที่รับเงิน (Date)</label>
-          <input type="text" id="transactionDate" placeholder="ex. 24/2/2026" />
-          <div class="hint">💡 โปรดใช้รูปแบบ วัน/เดือน/ปี (ค.ศ.)</div>
+        <div class="fields">
+          <!-- File Info -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Slip File</span>
+            </div>
+            <div class="field-value" id="paymentFileInfo">
+              —
+            </div>
+          </div>
+
+          <!-- Receiver / Company -->
+          <div class="field" id="paymentFieldCompany">
+            <div class="field-label-row">
+              <span class="field-label">Company (Receiver)</span>
+              <span class="field-hint">AVT / ACC / BDI</span>
+            </div>
+            <input
+              id="paymentCompany"
+              class="input"
+              type="text"
+              placeholder="เช่น AVT"
+            />
+          </div>
+
+          <!-- Customer -->
+          <div class="field" id="paymentFieldCustomer">
+            <div class="field-label-row">
+              <span class="field-label">Customer Name</span>
+              <span class="field-hint">ชื่อผู้โอน / ลูกค้า</span>
+            </div>
+            <input
+              id="paymentCustomer"
+              class="input"
+              type="text"
+              placeholder="เช่น ADecor"
+            />
+          </div>
+
+          <!-- Date -->
+          <div class="field" id="paymentFieldDate">
+            <div class="field-label-row">
+              <span class="field-label">Transaction Date</span>
+              <span class="field-hint">รูปแบบ: 24/2/2026</span>
+            </div>
+            <input
+              id="paymentDate"
+              class="input"
+              type="text"
+              placeholder="เช่น 24/2/2026"
+            />
+          </div>
+
+          <!-- Amount -->
+          <div class="field" id="paymentFieldAmount">
+            <div class="field-label-row">
+              <span class="field-label">Amount (THB)</span>
+            </div>
+            <input
+              id="paymentAmount"
+              class="input"
+              type="number"
+              inputmode="decimal"
+              step="0.01"
+              placeholder="เช่น 5999"
+            />
+          </div>
+
+          <!-- Advance Note -->
+          <div class="field hidden" id="paymentFieldNote">
+            <div class="field-label-row">
+              <span class="field-label">Advance Note</span>
+              <span class="field-hint">ระบุรายละเอียดการจ่ายแทน / จ่ายสำรอง</span>
+            </div>
+            <textarea
+              id="paymentNote"
+              class="input"
+              placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"
+            ></textarea>
+          </div>
         </div>
 
-        <div class="field">
-          <label>💰 จำนวนเงิน (Amount)</label>
-          <input type="number" id="amount" placeholder="ex. 5999" step="any" />
-          <div class="hint">💡 กรอกเฉพาะตัวเลข ไม่ต้องใส่ลูกน้ำ ( , )</div>
+        <div class="pill-row">
+          <span class="pill"><strong>Run No.</strong> <span id="paymentRunNoPill">—</span></span>
+          <span class="pill"><strong>Mode</strong> <span id="paymentModePill">Normal</span></span>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="btnSavePayment">
+            <span class="btn-icon">💾</span>
+            <span>บันทึกการแก้ไข</span>
+          </button>
+          <button class="btn btn-outline" id="btnResetPayment">
+            <span class="btn-icon">↩️</span>
+            <span>รีเซ็ตกลับเป็นค่าเดิม</span>
+          </button>
         </div>
       </div>
 
-      <!-- ฟิลด์สำหรับ ADVANCE -->
-      <div id="advance-fields" style="display:none;">
-        <div class="field">
-          <label>📝 Note (Advance)</label>
-          <textarea id="advanceNote" placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"></textarea>
-          <div class="hint">💡 กรอกรายละเอียดการจ่ายแทน/จ่ายสำรอง</div>
+      <!-- CLAIM SECTION -->
+      <div id="claimSection" class="card hidden">
+        <div class="card-title-row">
+          <div class="card-title">CLAIM REQUEST SUMMARY</div>
+          <div id="claimRunNoBadge" class="badge-soft">Run No. —</div>
+        </div>
+
+        <div class="fields">
+          <!-- File Info -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Claim Form (PDF)</span>
+            </div>
+            <div class="field-value" id="claimFileInfo">
+              —
+            </div>
+          </div>
+
+          <!-- Company -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Company</span>
+              <span class="field-hint">บริษัทที่เป็นพนักงาน</span>
+            </div>
+            <input
+              id="claimCompany"
+              class="input"
+              type="text"
+              placeholder="เช่น AVT / ACC / BDI"
+            />
+          </div>
+
+          <!-- Period -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Claim Period</span>
+              <span class="field-hint">เช่น 02/2026</span>
+            </div>
+            <input
+              id="claimPeriod"
+              class="input"
+              type="text"
+              placeholder="เช่น 02/2026"
+            />
+          </div>
+
+          <!-- Amount -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Amount (THB)</span>
+            </div>
+            <input
+              id="claimAmount"
+              class="input"
+              type="number"
+              inputmode="decimal"
+              step="0.01"
+              placeholder="เช่น 1250"
+            />
+          </div>
+
+          <!-- Status (readonly display) -->
+          <div class="field">
+            <div class="field-label-row">
+              <span class="field-label">Status</span>
+            </div>
+            <div class="field-value">
+              <span id="claimStatusText">DRAFT</span>
+              <span id="claimStatusTag" class="tag-status hidden">SUBMITTED</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill"><strong>Run No.</strong> <span id="claimRunNoPill">—</span></span>
+          <span class="pill"><strong>Mode</strong> Claim Request</span>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="btnSaveClaim">
+            <span class="btn-icon">💾</span>
+            <span>บันทึกการแก้ไข</span>
+          </button>
+          <button class="btn btn-outline" id="btnResetClaim">
+            <span class="btn-icon">↩️</span>
+            <span>รีเซ็ตกลับเป็นค่าเดิม</span>
+          </button>
+        </div>
+
+        <div class="footer-note">
+          การเปลี่ยนสถานะเป็น SUBMITTED ทำผ่านปุ่มยืนยันใน LINE Chat
         </div>
       </div>
 
-      <div class="field">
-        <label>🔗 ลิงก์ไฟล์สลิป (Slip URL)</label>
-        <div class="file-link-wrapper">
-          <span>📄</span>
-          <input type="text" id="fileUrl" readonly placeholder="กำลังโหลดลิงก์..." />
-        </div>
+      <div class="footer-note">
+        ถ้ามีปัญหาเรื่องการโหลดข้อมูล ให้ปิดหน้าแล้วเปิดจากปุ่มใน LINE อีกครั้ง
       </div>
-
-      <div class="buttons">
-        <button class="btn btn-secondary" type="button" id="btnCancel">ยกเลิก</button>
-        <button class="btn btn-primary" type="button" id="btnSave">บันทึกข้อมูล</button>
-      </div>
-
-      <div id="message" class="message"></div>
     </div>
   </div>
 
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    const LIFF_ID = '2009213238-f1ncr2hm';
-    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
+    // 🔧 TODO: แก้ URL ให้ตรงกับ Web App ของ Script Backend
+    const PAYMENT_API_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
+    const CLAIM_API_URL   = 'https://script.google.com/macros/s/AKfycbzfKuGhUIOPpsCutKSm8fPdQ6kObnKE2jZJmW34ur-NPw9YgavbZmB3II5oJnvSUouuEQ/exec';
+
+    const state = {
+      mode: 'payment', // 'payment' | 'claim'
+      runNo: '',
+      receiver: '',
+      rawPaymentData: null,
+      rawClaimData: null
+    };
 
     function getQueryParams() {
       const params = {};
-      const qs = window.location.search.substring(1).split("&");
-      qs.forEach(p => {
-        if (!p) return;
-        const [k, v] = p.split("=");
-        if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || "");
+      const usp = new URLSearchParams(window.location.search || '');
+      usp.forEach((v, k) => {
+        params[k] = v;
       });
       return params;
     }
 
-    function showMessage(text, type) {
-      const el = document.getElementById('message');
-      if (!text) {
-        el.className = 'message';
-        el.textContent = '';
-        return;
-      }
-      el.textContent = text;
-      el.className = 'message show ' + (type || '');
-    }
-
-    async function loadData(runNo, receiver) {
-      const subtitle = document.getElementById('subtitle');
-      subtitle.textContent = 'โปรดตรวจสอบและแก้ไขข้อมูลให้ถูกต้อง';
-
-      const url = `${BACKEND_URL}?action=get&runNo=${encodeURIComponent(runNo)}&receiver=${encodeURIComponent(receiver)}`;
-      const res = await fetch(url, { method: 'GET' });
-
-      let json;
-      try {
-        json = await res.json();
-      } catch (err) {
-        console.error('GET parse error:', err);
-        throw new Error('ไม่สามารถอ่านข้อมูลจากเซิร์ฟเวอร์ได้');
-      }
-
-      if (!json.ok) {
-        throw new Error(json.error || 'โหลดข้อมูลไม่สำเร็จ');
-      }
-
-      const data = json.data || {};
-
-      const isAdvance = (receiver || '').toUpperCase() === 'ADVANCE';
-      document.body.dataset.mode = isAdvance ? 'ADVANCE' : 'NORMAL';
-
-      // ค่า common
-      document.getElementById('runNo').value = data.runNo || runNo;
-      document.getElementById('receiverName').value = data.receiverName || receiver;
-      document.getElementById('fileUrl').value = data.fileUrl || '';
-
-      document.getElementById('displayRunNo').textContent = data.runNo || runNo;
-      document.getElementById('displayReceiverName').textContent = data.receiverName || receiver;
-
-      if (isAdvance) {
-        // ซ่อนฟิลด์ปกติ แสดงฟิลด์ Note
-        document.getElementById('normal-fields').style.display = 'none';
-        document.getElementById('advance-fields').style.display = 'block';
-
-        document.getElementById('advanceNote').value = data.note || '';
+    function setStatus(message, isError = false) {
+      const bar = document.getElementById('statusBar');
+      const dot = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      text.textContent = message || '';
+      if (isError) {
+        bar.classList.add('error');
+        dot.classList.add('error');
       } else {
-        // ใช้ฟิลด์ปกติ
-        document.getElementById('normal-fields').style.display = 'block';
-        document.getElementById('advance-fields').style.display = 'none';
-
-        document.getElementById('transactionDate').value = data.transactionDate || '';
-        document.getElementById('amount').value = data.amount || '';
-        document.getElementById('senderName').value = data.senderName || '';
+        bar.classList.remove('error');
+        dot.classList.remove('error');
       }
-
-      document.getElementById('form-area').style.display = 'block';
     }
 
-    async function saveData() {
-      const mode = (document.body.dataset.mode || 'NORMAL').toUpperCase();
-      const runNo = document.getElementById('runNo').value.trim();
-      const receiverName = document.getElementById('receiverName').value.trim();
+    function setMode(mode) {
+      state.mode = mode === 'claim' ? 'claim' : 'payment';
+      const headerIcon = document.getElementById('headerIcon');
+      const headerTitle = document.getElementById('headerTitle');
+      const headerSubtitle = document.getElementById('headerSubtitle');
+      const modePill = document.getElementById('modePill');
+      const modeEmoji = document.getElementById('modeEmoji');
+      const modeText = document.getElementById('modeText');
+      const paymentSection = document.getElementById('paymentSection');
+      const claimSection = document.getElementById('claimSection');
 
-      const btnSave = document.getElementById('btnSave');
-      showMessage('', '');
+      if (state.mode === 'payment') {
+        headerIcon.textContent = '💸';
+        headerTitle.textContent = 'Payment Editor';
+        headerSubtitle.textContent = 'แก้ไขข้อมูลสลิปก่อนบันทึกลงระบบ';
+        modeEmoji.textContent = '💳';
+        modeText.textContent = 'Payment Collection';
+        paymentSection.classList.remove('hidden');
+        claimSection.classList.add('hidden');
+      } else {
+        headerIcon.textContent = '📄';
+        headerTitle.textContent = 'Claim Editor';
+        headerSubtitle.textContent = 'แก้ไขข้อมูลใบเบิก (PDF) ก่อนยืนยัน';
+        modeEmoji.textContent = '📑';
+        modeText.textContent = 'Claim Request';
+        paymentSection.classList.add('hidden');
+        claimSection.classList.remove('hidden');
+      }
+    }
 
-      let payload = { runNo, receiverName, mode };
+    /** ================= PAYMENT BINDING ================= */
+
+    function bindPaymentForm(data) {
+      state.rawPaymentData = JSON.parse(JSON.stringify(data || {}));
+
+      const fileInfoEl = document.getElementById('paymentFileInfo');
+      const runNoBadge = document.getElementById('paymentRunNoBadge');
+      const runNoPill = document.getElementById('paymentRunNoPill');
+      const modePill = document.getElementById('paymentModePill');
+
+      const companyInput = document.getElementById('paymentCompany');
+      const customerInput = document.getElementById('paymentCustomer');
+      const dateInput = document.getElementById('paymentDate');
+      const amountInput = document.getElementById('paymentAmount');
+      const noteInput = document.getElementById('paymentNote');
+
+      const fieldCompany = document.getElementById('paymentFieldCompany');
+      const fieldCustomer = document.getElementById('paymentFieldCustomer');
+      const fieldDate = document.getElementById('paymentFieldDate');
+      const fieldAmount = document.getElementById('paymentFieldAmount');
+      const fieldNote = document.getElementById('paymentFieldNote');
+
+      const runNo = data.runNo || state.runNo || '-';
+      const fileName = data.fileName || '(ไม่พบชื่อไฟล์)';
+      const fileUrl = data.fileUrl || '';
+
+      runNoBadge.textContent = 'Run No. ' + runNo;
+      runNoPill.textContent = runNo;
+
+      if (fileUrl) {
+        fileInfoEl.innerHTML = `
+          <span>${fileName}</span>
+          <a href="${fileUrl}" target="_blank" rel="noopener">เปิดไฟล์</a>
+        `;
+      } else {
+        fileInfoEl.textContent = fileName;
+      }
+
+      const mode = data.mode || (data.receiverName === 'ADVANCE' || data.receiver === 'ADVANCE' ? 'ADVANCE' : 'NORMAL');
 
       if (mode === 'ADVANCE') {
-        const note = document.getElementById('advanceNote').value.trim();
+        modePill.textContent = 'Advance';
+        // ซ่อนฟิลด์ปกติ แสดง Note อย่างเดียว
+        fieldCompany.classList.add('hidden');
+        fieldCustomer.classList.add('hidden');
+        fieldDate.classList.add('hidden');
+        fieldAmount.classList.add('hidden');
+        fieldNote.classList.remove('hidden');
 
-        if (!note) {
-          showMessage('กรุณากรอก Note สำหรับ Advance', 'error');
-          return;
-        }
-
-        payload.note = note;
+        companyInput.value = data.receiverName || data.receiver || 'ADVANCE';
+        customerInput.value = data.senderName || '';
+        dateInput.value = data.transactionDateText || '';
+        amountInput.value = data.amount || '';
+        noteInput.value = data.note || data.noteText || '';
       } else {
-        const amount = document.getElementById('amount').value.trim();
-        const transactionDate = document.getElementById('transactionDate').value.trim();
-        const senderName = document.getElementById('senderName').value.trim();
+        modePill.textContent = 'Normal';
+        fieldCompany.classList.remove('hidden');
+        fieldCustomer.classList.remove('hidden');
+        fieldDate.classList.remove('hidden');
+        fieldAmount.classList.remove('hidden');
+        fieldNote.classList.add('hidden');
 
-        if (!amount) {
-          showMessage('กรุณากรอกจำนวนเงิน', 'error');
-          return;
-        }
-        if (!transactionDate) {
-          showMessage('กรุณากรอกวันที่รับเงิน', 'error');
-          return;
-        }
+        companyInput.value = data.receiverName || data.receiver || '';
+        customerInput.value = data.senderName || '';
+        dateInput.value = data.transactionDateText || '';
+        amountInput.value = data.amount || data.amountText || '';
+        noteInput.value = '';
+      }
+    }
 
-        payload.amount = amount;
-        payload.transactionDate = transactionDate;
-        payload.senderName = senderName;
+    function resetPaymentForm() {
+      if (!state.rawPaymentData) return;
+      bindPaymentForm(state.rawPaymentData);
+      setStatus('รีเซ็ตข้อมูล Payment กลับเป็นค่าเดิมแล้ว', false);
+    }
+
+    async function savePayment() {
+      if (!state.runNo || !state.receiver) {
+        setStatus('ไม่พบ runNo หรือ receiver ใน URL โปรดเปิดจากปุ่มใน LINE อีกครั้ง', true);
+        return;
       }
 
-      btnSave.textContent = 'กำลังบันทึก...';
-      btnSave.disabled = true;
+      const company = document.getElementById('paymentCompany').value.trim();
+      const customer = document.getElementById('paymentCustomer').value.trim();
+      const dateText = document.getElementById('paymentDate').value.trim();
+      const amount = document.getElementById('paymentAmount').value.trim();
+      const note = document.getElementById('paymentNote').value.trim();
+      const modeText = document.getElementById('paymentModePill').textContent || 'Normal';
+
+      const isAdvance = (modeText || '').toUpperCase() === 'ADVANCE';
+
+      if (!isAdvance) {
+        if (!company) {
+          setStatus('กรุณาระบุ Company (Receiver) ให้ครบก่อนบันทึก', true);
+          return;
+        }
+        if (!customer) {
+          setStatus('กรุณาระบุ Customer Name ให้ครบก่อนบันทึก', true);
+          return;
+        }
+        if (!dateText) {
+          setStatus('กรุณาระบุ Transaction Date ให้ครบก่อนบันทึก', true);
+          return;
+        }
+        if (!amount) {
+          setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true);
+          return;
+        }
+      } else {
+        if (!note) {
+          setStatus('กรุณาระบุ Note สำหรับ Advance ก่อนบันทึก', true);
+          return;
+        }
+      }
+
+      setStatus('กำลังบันทึกข้อมูล Payment...', false);
 
       try {
-        const res = await fetch(`${BACKEND_URL}?action=update`, {
+        const payload = {
+          action: isAdvance ? 'updateAdvance' : 'updatePayment',
+          runNo: state.runNo,
+          receiver: state.receiver,
+          company,
+          customer,
+          transactionDate: dateText,
+          amount,
+          note
+        };
+
+        const res = await fetch(PAYMENT_API_URL, {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         if (!res.ok) {
-          const text = await res.text().catch(() => '');
-          console.error('Update HTTP error:', res.status, text);
-          showMessage(`เซิร์ฟเวอร์ตอบกลับผิดพลาด (HTTP ${res.status})`, 'error');
-          return;
+          throw new Error('HTTP ' + res.status);
         }
 
-        let json;
-        try {
-          json = await res.json();
-        } catch (parseErr) {
-          console.error('JSON parse error:', parseErr);
-          showMessage('อ่านข้อมูลตอบกลับจากเซิร์ฟเวอร์ไม่ได้ (ไม่ใช่ JSON)', 'error');
-          return;
+        const json = await res.json();
+        if (!json.success) {
+          throw new Error(json.message || 'Update failed');
         }
 
-        if (json.ok) {
-          showMessage('บันทึกข้อมูลเรียบร้อยแล้ว ✅', 'success');
-
-          try {
-            if (liff.isInClient()) {
-              const company = receiverName || '-';
-              let customer = '-';
-              let date = '-';
-              let amt = '-';
-
-              if (mode === 'ADVANCE') {
-                // สำหรับ ADVANCE ใช้ Note แทน Customer / Date / Amount
-                customer = '(Advance)';
-                date = '-';
-                amt = '-';
-              } else {
-                customer = document.getElementById('senderName').value.trim() || '-';
-                date = document.getElementById('transactionDate').value.trim() || '-';
-                amt = document.getElementById('amount').value.trim() || '-';
-              }
-
-              await liff.sendMessages([
-                {
-                  type: 'flex',
-                  altText: 'อัปเดตข้อมูลเรียบร้อยแล้ว',
-                  contents: {
-                    type: 'bubble',
-                    size: 'kilo',
-                    body: {
-                      type: 'box',
-                      layout: 'vertical',
-                      paddingAll: '20px',
-                      contents: [
-                        { type: 'text', text: '✅', size: '5xl', align: 'center', margin: 'md' },
-                        { type: 'text', text: 'Updated Successfully', weight: 'bold', size: 'xl', align: 'center', margin: 'md', color: '#1F2937' },
-                        { type: 'text', text: 'อัปเดตข้อมูลเรียบร้อยแล้วครับ', size: 'sm', color: '#10B981', align: 'center', margin: 'sm', wrap: true },
-                        { type: 'separator', margin: 'lg', color: '#F3F4F6' },
-                        {
-                          type: 'box',
-                          layout: 'vertical',
-                          margin: 'lg',
-                          spacing: 'sm',
-                          backgroundColor: '#F9FAFB',
-                          cornerRadius: '8px',
-                          paddingAll: '12px',
-                          contents: [
-                            {
-                              type: 'box',
-                              layout: 'baseline',
-                              spacing: 'sm',
-                              contents: [
-                                { type: 'text', text: 'Company', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: company, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
-                              ]
-                            },
-                            {
-                              type: 'box',
-                              layout: 'baseline',
-                              spacing: 'sm',
-                              contents: [
-                                { type: 'text', text: 'Customer', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: customer, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
-                              ]
-                            },
-                            {
-                              type: 'box',
-                              layout: 'baseline',
-                              spacing: 'sm',
-                              contents: [
-                                { type: 'text', text: 'Date', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: date, color: '#1F2937', size: 'xs', flex: 4, weight: 'bold', wrap: true }
-                              ]
-                            },
-                            {
-                              type: 'box',
-                              layout: 'baseline',
-                              spacing: 'sm',
-                              contents: [
-                                { type: 'text', text: 'Amount', color: '#9CA3AF', size: 'xs', flex: 2 },
-                                { type: 'text', text: (amt ? amt + ' ฿' : '-'), color: '#111827', size: 'sm', flex: 4, weight: 'bold', wrap: true }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]);
-
-              setTimeout(() => {
-                try { liff.closeWindow(); } catch (e) {}
-              }, 1200);
-            }
-          } catch (e) {
-            console.error('LIFF send/close error:', e);
-          }
-
-        } else {
-          showMessage('เกิดข้อผิดพลาด: ' + (json.error || ''), 'error');
+        setStatus('บันทึก Payment เรียบร้อยแล้ว ✔', false);
+        if (json.data) {
+          bindPaymentForm(json.data);
         }
-
       } catch (err) {
-        console.error('fetch error:', err);
-        showMessage('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
-      } finally {
-        btnSave.textContent = 'บันทึกข้อมูล';
-        btnSave.disabled = false;
+        console.error('savePayment error', err);
+        setStatus('บันทึกไม่สำเร็จ: ' + (err.message || 'Unknown error'), true);
       }
     }
 
-    async function main() {
-      const subtitle = document.getElementById('subtitle');
+    /** ================= CLAIM BINDING ================= */
+
+    function bindClaimForm(data) {
+      state.rawClaimData = JSON.parse(JSON.stringify(data || {}));
+
+      const fileInfoEl = document.getElementById('claimFileInfo');
+      const runNoBadge = document.getElementById('claimRunNoBadge');
+      const runNoPill = document.getElementById('claimRunNoPill');
+
+      const companyInput = document.getElementById('claimCompany');
+      const periodInput = document.getElementById('claimPeriod');
+      const amountInput = document.getElementById('claimAmount');
+      const statusText = document.getElementById('claimStatusText');
+      const statusTag = document.getElementById('claimStatusTag');
+
+      const runNo = data.runNo || state.runNo || '-';
+      const fileName = data.fileName || '(ไม่พบชื่อไฟล์)';
+      const fileUrl = data.fileUrl || '';
+      const status = (data.status || 'DRAFT').toUpperCase();
+
+      runNoBadge.textContent = 'Run No. ' + runNo;
+      runNoPill.textContent = runNo;
+
+      if (fileUrl) {
+        fileInfoEl.innerHTML = `
+          <span>${fileName}</span>
+          <a href="${fileUrl}" target="_blank" rel="noopener">เปิดไฟล์</a>
+        `;
+      } else {
+        fileInfoEl.textContent = fileName;
+      }
+
+      companyInput.value = data.company || '';
+      periodInput.value = data.period || '';
+      amountInput.value = data.amount || '';
+
+      statusText.textContent = status;
+      if (status === 'SUBMITTED') {
+        statusTag.classList.remove('hidden');
+      } else {
+        statusTag.classList.add('hidden');
+      }
+    }
+
+    function resetClaimForm() {
+      if (!state.rawClaimData) return;
+      bindClaimForm(state.rawClaimData);
+      setStatus('รีเซ็ตข้อมูล Claim กลับเป็นค่าเดิมแล้ว', false);
+    }
+
+    async function saveClaim() {
+      if (!state.runNo) {
+        setStatus('ไม่พบ runNo ใน URL โปรดเปิดจากปุ่มใน LINE อีกครั้ง', true);
+        return;
+      }
+
+      const company = document.getElementById('claimCompany').value.trim();
+      const period = document.getElementById('claimPeriod').value.trim();
+      const amount = document.getElementById('claimAmount').value.trim();
+
+      if (!company) {
+        setStatus('กรุณาระบุ Company ให้ครบก่อนบันทึก', true);
+        return;
+      }
+      if (!period) {
+        setStatus('กรุณาระบุ Claim Period ให้ครบก่อนบันทึก', true);
+        return;
+      }
+      if (!amount) {
+        setStatus('กรุณาระบุ Amount ให้ครบก่อนบันทึก', true);
+        return;
+      }
+
+      setStatus('กำลังบันทึกข้อมูล Claim...', false);
 
       try {
-        await liff.init({ liffId: LIFF_ID });
-      } catch (err) {
-        console.error(err);
-        subtitle.textContent = 'โหลด LIFF ไม่สำเร็จ: ' + (err.message || err);
-        return;
-      }
+        const payload = {
+          action: 'updateClaim',
+          runNo: state.runNo,
+          company,
+          period,
+          amount
+        };
 
-      const params = getQueryParams();
-      const runNo = params.runNo;
-      const receiver = params.receiver;
-
-      if (!runNo || !receiver) {
-        subtitle.textContent = 'ไม่พบข้อมูล Run No หรือ Company ใน URL';
-        return;
-      }
-
-      try {
-        await loadData(runNo, receiver);
-      } catch (err) {
-        console.error(err);
-        subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (err.message || err);
-        showMessage(err.message || err, 'error');
-        return;
-      }
-
-      document.getElementById('btnSave').addEventListener('click', () => {
-        saveData().catch(err => {
-          console.error(err);
-          showMessage('เกิดข้อผิดพลาด: ' + (err.message || err), 'error');
+        const res = await fetch(CLAIM_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-      });
 
-      document.getElementById('btnCancel').addEventListener('click', () => {
-        try {
-          if (liff.isInClient()) {
-            liff.closeWindow();
-          } else {
-            showMessage('ยกเลิกการแก้ไขแล้ว', 'error');
-          }
-        } catch (e) {}
-      });
+        if (!res.ok) {
+          throw new Error('HTTP ' + res.status);
+        }
+
+        const json = await res.json();
+        if (!json.success) {
+          throw new Error(json.message || 'Update failed');
+        }
+
+        setStatus('บันทึก Claim เรียบร้อยแล้ว ✔', false);
+        if (json.data) {
+          bindClaimForm(json.data);
+        }
+      } catch (err) {
+        console.error('saveClaim error', err);
+        setStatus('บันทึกไม่สำเร็จ: ' + (err.message || 'Unknown error'), true);
+      }
     }
 
-    window.addEventListener('load', main);
+    /** ================= INIT ================= */
+
+    async function init() {
+      const params = getQueryParams();
+      state.runNo = params.runNo || '';
+      state.receiver = params.receiver || '';
+
+      // mode priority:
+      // 1) ถ้ามี mode=claim → claim
+      // 2) ถ้ามี mode=payment → payment
+      // 3) ถ้าไม่มี receiver เลย → claim
+      // 4) default → payment
+      const modeParam = (params.mode || params.bot || '').toLowerCase();
+      let mode = 'payment';
+      if (modeParam === 'claim') mode = 'claim';
+      else if (modeParam === 'payment') mode = 'payment';
+      else if (!state.receiver) mode = 'claim';
+
+      setMode(mode);
+
+      // bind listeners
+      document
+        .getElementById('btnSavePayment')
+        .addEventListener('click', savePayment);
+      document
+        .getElementById('btnResetPayment')
+        .addEventListener('click', resetPaymentForm);
+      document
+        .getElementById('btnSaveClaim')
+        .addEventListener('click', saveClaim);
+      document
+        .getElementById('btnResetClaim')
+        .addEventListener('click', resetClaimForm);
+
+      if (!state.runNo) {
+        setStatus('ไม่พบหมายเลข Run No. ใน URL โปรดเปิดจากปุ่มใน LINE อีกครั้ง', true);
+        return;
+      }
+
+      try {
+        if (state.mode === 'payment') {
+          setStatus('กำลังโหลดข้อมูล Payment...', false);
+          const url =
+            PAYMENT_API_URL +
+            '?action=getPayment&runNo=' +
+            encodeURIComponent(state.runNo) +
+            '&receiver=' +
+            encodeURIComponent(state.receiver || '');
+          const res = await fetch(url, { method: 'GET' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const json = await res.json();
+          if (!json.success || !json.data) {
+            throw new Error(json.message || 'ไม่พบข้อมูล Payment');
+          }
+          bindPaymentForm(json.data);
+          setStatus('โหลดข้อมูล Payment เรียบร้อยแล้ว', false);
+        } else {
+          setStatus('กำลังโหลดข้อมูล Claim...', false);
+          const url =
+            CLAIM_API_URL +
+            '?action=getClaim&runNo=' +
+            encodeURIComponent(state.runNo);
+          const res = await fetch(url, { method: 'GET' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const json = await res.json();
+          if (!json.success || !json.data) {
+            throw new Error(json.message || 'ไม่พบข้อมูล Claim');
+          }
+          bindClaimForm(json.data);
+          setStatus('โหลดข้อมูล Claim เรียบร้อยแล้ว', false);
+        }
+      } catch (err) {
+        console.error('init load error', err);
+        setStatus(
+          'โหลดข้อมูลไม่สำเร็จ: ' +
+            (err.message || 'Unknown error') +
+            ' (โปรดเปิดจากปุ่มใน LINE อีกครั้ง)',
+          true
+        );
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
