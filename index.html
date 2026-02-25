@@ -560,14 +560,14 @@
       const dot = document.getElementById('statusDot');
       const text = document.getElementById('statusText');
       text.textContent = message || '';
-      
+
       bar.className = 'status-bar';
       dot.className = 'status-dot';
 
       if (isError) {
         bar.classList.add('error');
         dot.classList.add('error');
-      } else if (message.includes('เรียบร้อย') || message.includes('✔')) {
+      } else if (message.includes('เรียบร้อย') || message.includes('✔') || message.includes('พร้อมสำหรับการแก้ไข')) {
         bar.classList.add('success');
         dot.classList.add('success');
       }
@@ -826,6 +826,41 @@
       }
     }
 
+    /** ================= LOAD HELPERS ================= */
+
+    async function loadPaymentStrict() {
+      setStatus('กำลังโหลดข้อมูล Payment...', false);
+      const url = PAYMENT_API_URL +
+        '?action=getPayment' +
+        '&runNo=' + encodeURIComponent(state.runNo) +
+        '&receiver=' + encodeURIComponent(state.receiver || '');
+
+      const res = await fetch(url, { method: 'GET' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if (!json.success || !json.data) {
+        throw new Error(json.message || 'ไม่พบข้อมูล Payment');
+      }
+      bindPaymentForm(json.data);
+      setStatus('พร้อมสำหรับการแก้ไข', false);
+    }
+
+    async function loadClaimStrict() {
+      setStatus('กำลังโหลดข้อมูล Claim...', false);
+      const url = CLAIM_API_URL +
+        '?action=getClaim' +
+        '&runNo=' + encodeURIComponent(state.runNo);
+
+      const res = await fetch(url, { method: 'GET' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      if (!json.success || !json.data) {
+        throw new Error(json.message || 'ไม่พบข้อมูล Claim');
+      }
+      bindClaimForm(json.data);
+      setStatus('พร้อมสำหรับการแก้ไข', false);
+    }
+
     /** ================= INIT ================= */
 
     async function init() {
@@ -833,18 +868,26 @@
       state.runNo = params.runNo || '';
       state.receiver = params.receiver || '';
 
-      // ใช้ page เป็นตัวกำหนดหน้า (payment / advance / claim)
+      // 1) ใช้ page เป็นตัวหลัก
       const page = (params.page || '').toLowerCase();
-      const modeParam = (params.mode || params.bot || '').toLowerCase(); // เผื่อมีลิงก์เก่า
+      // 2) เผื่อ param เก่า mode / bot
+      const modeParam = (params.mode || params.bot || '').toLowerCase();
 
-      let mode = 'payment';
+      let guessedMode = 'payment';
+
       if (page === 'claim' || page === 'travel' || modeParam === 'claim' || modeParam === 'travel') {
-        mode = 'claim';
+        guessedMode = 'claim';
+      } else if (page === 'payment' || page === 'advance' || modeParam === 'payment') {
+        guessedMode = 'payment';
+      } else if (state.receiver) {
+        // ถ้ามี receiver → น่าจะมาจาก Payment Bot
+        guessedMode = 'payment';
       } else {
-        mode = 'payment'; // payment / advance / default
+        // ไม่มี receiver → เดาเป็น Claim ก่อน
+        guessedMode = 'claim';
       }
 
-      setMode(mode);
+      setMode(guessedMode);
 
       document.getElementById('btnSavePayment').addEventListener('click', savePayment);
       document.getElementById('btnResetPayment').addEventListener('click', resetPaymentForm);
@@ -856,36 +899,34 @@
         return;
       }
 
+      // ลองโหลดตามโหมดที่เดาไว้ก่อน ถ้าไม่สำเร็จค่อยลองสลับอีกฝั่ง
       try {
         if (state.mode === 'payment') {
-          setStatus('กำลังโหลดข้อมูล Payment...', false);
-          const url = PAYMENT_API_URL +
-            '?action=getPayment' +
-            '&runNo=' + encodeURIComponent(state.runNo) +
-            '&receiver=' + encodeURIComponent(state.receiver || '');
-
-          const res = await fetch(url, { method: 'GET' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const json = await res.json();
-          if (!json.success || !json.data) throw new Error(json.message || 'ไม่พบข้อมูล Payment');
-          bindPaymentForm(json.data);
-          setStatus('พร้อมสำหรับการแก้ไข', false);
+          await loadPaymentStrict();
         } else {
-          setStatus('กำลังโหลดข้อมูล Claim...', false);
-          const url = CLAIM_API_URL +
-            '?action=getClaim' +
-            '&runNo=' + encodeURIComponent(state.runNo);
-
-          const res = await fetch(url, { method: 'GET' });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const json = await res.json();
-          if (!json.success || !json.data) throw new Error(json.message || 'ไม่พบข้อมูล Claim');
-          bindClaimForm(json.data);
-          setStatus('พร้อมสำหรับการแก้ไข', false);
+          await loadClaimStrict();
         }
-      } catch (err) {
-        console.error('init load error', err);
-        setStatus('โหลดข้อมูลไม่สำเร็จ: ' + (err.message || 'Unknown error') + ' (โปรดเปิดจากปุ่มใน LINE อีกครั้ง)', true);
+      } catch (errFirst) {
+        console.warn('first load error, try fallback', errFirst);
+        try {
+          if (state.mode === 'payment') {
+            // fallback → claim
+            setMode('claim');
+            await loadClaimStrict();
+          } else {
+            // fallback → payment
+            setMode('payment');
+            await loadPaymentStrict();
+          }
+        } catch (errSecond) {
+          console.error('both load error', errSecond);
+          setStatus(
+            'โหลดข้อมูลไม่สำเร็จ: ' +
+              (errSecond.message || 'Unknown error') +
+              ' (โปรดเปิดจากปุ่มใน LINE อีกครั้ง หรือเช็คว่า Run No. มีในชีตแล้ว)',
+            true
+          );
+        }
       }
     }
 
