@@ -328,7 +328,7 @@
       let data = {};
       try {
         data = await loadFromSheet(runNo, receiver);
-        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅ แก้ไขแล้วกดบันทึก';
+        subtitle.textContent = 'แก้ไขข้อมูลแล้วกดบันทึก';
       } catch (e) {
         console.error('Prefill error:', e);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ';
