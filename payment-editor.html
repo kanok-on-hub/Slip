@@ -188,7 +188,7 @@
       let data = {};
       try {
         data = await prefill(runNo, receiver);
-        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅ แก้ไขแล้วกดอัปเดตข้อมูล';
+        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅';
       } catch (e) {
         console.error(e);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ';
