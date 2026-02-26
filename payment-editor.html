@@ -15,12 +15,12 @@
     .info{background:var(--accent);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0 18px}
     .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
     .row:last-child{margin-bottom:0}
-    .label{color:var(--muted);font-weight:700}
-    .value{font-weight:800;text-align:right}
+    .label{color:var(--muted);font-weight:800}
+    .value{font-weight:900;text-align:right}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;color:#fff;background:#111827}
     .pill.orange{background:#EA580C}
     .field{margin-bottom:16px}
-    .field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
+    .field label{display:block;font-size:13px;font-weight:900;margin-bottom:6px}
     .field input,.field textarea{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:15px;color:var(--text);background:#FAFAFA}
     .field textarea{min-height:90px;resize:vertical}
     .hint{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center}
@@ -30,7 +30,7 @@
     .btn{flex:1;padding:14px 16px;border-radius:14px;border:none;font-size:15px;font-weight:900;cursor:pointer}
     .btn-primary{background:var(--primary);color:#fff}
     .btn-secondary{background:#E5E7EB;color:#4B5563}
-    .msg{margin-top:14px;font-size:13px;font-weight:800;text-align:center;padding:10px;border-radius:10px;display:none}
+    .msg{margin-top:14px;font-size:13px;font-weight:900;text-align:center;padding:10px;border-radius:10px;display:none}
     .msg.show{display:block}
     .msg.success{background:#D1FAE5;color:#065F46}
     .msg.error{background:#FEE2E2;color:#991B1B}
@@ -46,24 +46,35 @@
 
     <div id="form" style="display:none;">
       <div class="info">
-        <div class="row"><span class="label">Mode</span><span class="value"><span id="modeBadge" class="pill">-</span></span></div>
-        <div class="row"><span class="label">Run No.</span><span class="value" id="runNoText">-</span></div>
-        <div class="row"><span class="label">Company / Sheet</span><span class="value" id="receiverText">-</span></div>
+        <div class="row">
+          <span class="label">Mode</span>
+          <span class="value"><span id="modeBadge" class="pill">-</span></span>
+        </div>
+        <div class="row">
+          <span class="label">Run No.</span>
+          <span class="value" id="runNoText">-</span>
+        </div>
+        <div class="row">
+          <span class="label">Receiver Name</span>
+          <span class="value" id="receiverText">-</span>
+        </div>
       </div>
 
       <div id="normalFields">
         <div class="field">
-          <label>👤 ชื่อลูกค้า</label>
+          <label>👤 Customer Name</label>
           <input id="senderName" type="text" placeholder="ex. ADecor, SCG Home">
+          <div class="hint">💡 ระบุชื่อลูกค้าให้ตรงกับรายการ</div>
         </div>
         <div class="field">
-          <label>📅 วันที่รับเงิน</label>
+          <label>📅 Transaction Date</label>
           <input id="transactionDate" type="text" placeholder="ex. 24/2/2026">
           <div class="hint">💡 วัน/เดือน/ปี (ค.ศ.)</div>
         </div>
         <div class="field">
-          <label>💰 จำนวนเงิน</label>
+          <label>💰 Amount</label>
           <input id="amount" type="number" step="any" placeholder="ex. 5999">
+          <div class="hint">💡 ใส่เฉพาะตัวเลข (ระบบจะไปแสดง ฿ ในสรุป)</div>
         </div>
       </div>
 
@@ -71,6 +82,7 @@
         <div class="field">
           <label>📝 Note (Other)</label>
           <textarea id="note" placeholder="เช่น จ่ายค่ามัดจำแทนลูกค้า"></textarea>
+          <div class="hint">💡 ระบุรายละเอียดให้เข้าใจง่าย</div>
         </div>
       </div>
 
@@ -81,7 +93,7 @@
 
       <div class="buttons">
         <button class="btn btn-secondary" id="btnCancel" type="button">ยกเลิก</button>
-        <button class="btn btn-primary" id="btnSave" type="button">บันทึกข้อมูล</button>
+        <button class="btn btn-primary" id="btnSave" type="button">อัปเดตข้อมูล</button>
       </div>
 
       <div id="message" class="msg"></div>
@@ -121,7 +133,6 @@
     function cleanDateText(v){
       if(!v) return '';
       const s = String(v);
-      // ตัดเวลา ISO ออก
       const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
       if(m) return `${Number(m[3])}/${Number(m[2])}/${m[1]}`;
       return s.replace(/T.*$/,'').trim();
@@ -167,7 +178,7 @@
       if (!receiver && page === 'other') receiver = 'OTHER';
 
       if (!runNo || !receiver) {
-        subtitle.textContent = 'ไม่พบข้อมูล Run No หรือ Company ใน URL';
+        subtitle.textContent = 'ไม่พบข้อมูล Run No หรือ Receiver ใน URL';
         return;
       }
 
@@ -177,7 +188,7 @@
       let data = {};
       try {
         data = await prefill(runNo, receiver);
-        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅ แก้ไขแล้วกดบันทึก';
+        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅ แก้ไขแล้วกดอัปเดตข้อมูล';
       } catch (e) {
         console.error(e);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ';
@@ -211,11 +222,12 @@
       document.getElementById('btnSave').addEventListener('click', async () => {
         showMsg('', '');
 
-        if (!liff.isInClient()) { showMsg('กรุณาเปิดใน LINE app เพื่อบันทึก', 'error'); return; }
+        if (!liff.isInClient()) { showMsg('กรุณาเปิดใน LINE app เพื่ออัปเดตข้อมูล', 'error'); return; }
 
         const mode = (document.body.dataset.mode || 'PAYMENT').toUpperCase();
         const btn = document.getElementById('btnSave');
-        btn.textContent = 'กำลังส่งคำสั่ง...'; btn.disabled = true;
+
+        btn.textContent = 'กำลังอัปเดต...'; btn.disabled = true;
 
         try {
           if (mode === 'OTHER') {
@@ -228,15 +240,18 @@
               ['note', note]
             ]);
             await liff.sendMessages([{ type: 'text', text: cmd }]);
-            showMsg('ส่งคำสั่งแก้ไขเรียบร้อย ✅', 'success');
+
+            // ✅ เปลี่ยนข้อความตามที่ขอ
+            showMsg('อัปเดตข้อมูลเรียบร้อยแล้ว✅', 'success');
+
           } else {
             const senderName = document.getElementById('senderName').value.trim();
             const transactionDate = document.getElementById('transactionDate').value.trim();
             const amount = document.getElementById('amount').value.trim();
 
-            if (!senderName) { showMsg('กรุณากรอกชื่อลูกค้า', 'error'); return; }
-            if (!transactionDate) { showMsg('กรุณากรอกวันที่รับเงิน', 'error'); return; }
-            if (!amount) { showMsg('กรุณากรอกจำนวนเงิน', 'error'); return; }
+            if (!senderName) { showMsg('กรุณากรอก Customer Name', 'error'); return; }
+            if (!transactionDate) { showMsg('กรุณากรอก Transaction Date', 'error'); return; }
+            if (!amount) { showMsg('กรุณากรอก Amount', 'error'); return; }
 
             const cmd = 'PAY_EDIT|' + buildPairs([
               ['runNo', runNo],
@@ -246,16 +261,18 @@
               ['amount', amount]
             ]);
             await liff.sendMessages([{ type: 'text', text: cmd }]);
-            showMsg('ส่งคำสั่งแก้ไขเรียบร้อย ✅', 'success');
+
+            // ✅ เปลี่ยนข้อความตามที่ขอ
+            showMsg('อัปเดตข้อมูลเรียบร้อยแล้ว✅', 'success');
           }
 
           setTimeout(() => { try { liff.closeWindow(); } catch(e){} }, 900);
 
         } catch (e) {
           console.error('sendMessages error:', e);
-          showMsg('ไม่สามารถส่งคำสั่งได้ กรุณาลองใหม่อีกครั้ง', 'error');
+          showMsg('ไม่สามารถอัปเดตข้อมูลได้ กรุณาลองใหม่อีกครั้ง', 'error');
         } finally {
-          btn.textContent = 'บันทึกข้อมูล'; btn.disabled = false;
+          btn.textContent = 'อัปเดตข้อมูล'; btn.disabled = false;
         }
       });
     }
@@ -264,3 +281,9 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
