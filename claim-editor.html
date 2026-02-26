@@ -221,7 +221,7 @@
     }
 
     function buildPairs(pairs) {
-      return pairs.map(([k, v]) => k + '=' + encodeURIComponent(v ?? '')).join('|');
+      return pairs.map(([k, v]) => k + '=' + String(v ?? '')).join('|');
     }
 
     async function loadFromSheet(runNo) {
