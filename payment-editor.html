@@ -64,7 +64,7 @@
         <div class="field">
           <label>👤 Customer Name</label>
           <input id="senderName" type="text" placeholder="ex. ADecor, SCG Home">
-          <div class="hint">💡 ระบุชื่อลูกค้าให้ตรงกับรายการ</div>
+          <div class="hint">💡 ระบุชื่อลูกค้า เช่น SPX</div>
         </div>
         <div class="field">
           <label>📅 Transaction Date</label>
@@ -74,7 +74,7 @@
         <div class="field">
           <label>💰 Amount</label>
           <input id="amount" type="number" step="any" placeholder="ex. 5999">
-          <div class="hint">💡 ใส่เฉพาะตัวเลข (ระบบจะไปแสดง ฿ ในสรุป)</div>
+          <div class="hint">💡 ใส่เฉพาะตัวเลข ไม่ต้องใส่ (,)</div>
         </div>
       </div>
 
@@ -188,7 +188,7 @@
       let data = {};
       try {
         data = await prefill(runNo, receiver);
-        subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅';
+        subtitle.textContent = 'ดึงข้อมูลสำเร็จ พร้อมแก้ไข ✅';
       } catch (e) {
         console.error(e);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ';
