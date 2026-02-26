@@ -5,83 +5,35 @@
   <title>แก้ไขข้อมูลการรับเงิน</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
   <style>
-    :root{
-      --primary:#111827;
-      --bg:#F3F4F6;
-      --card:#FFFFFF;
-      --text:#1F2937;
-      --muted:#6B7280;
-      --border:#E5E7EB;
-      --accent:#F9FAFB;
-      --danger:#EF4444;
-      --success:#10B981;
-      --warn:#F59E0B;
-    }
-    body{
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-      margin:0;padding:20px 16px;background:var(--bg);color:var(--text);
-      -webkit-font-smoothing:antialiased;
-    }
-    .container{
-      max-width:480px;margin:0 auto;background:var(--card);
-      border-radius:20px;box-shadow:0 10px 25px -5px rgba(0,0,0,.05),0 8px 10px -6px rgba(0,0,0,.01);
-      padding:24px;box-sizing:border-box;
-    }
+    :root{--primary:#111827;--bg:#F3F4F6;--card:#fff;--text:#1F2937;--muted:#6B7280;--border:#E5E7EB;--accent:#F9FAFB;--success:#10B981}
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:20px 16px;background:var(--bg);color:var(--text)}
+    .container{max-width:480px;margin:0 auto;background:var(--card);border-radius:20px;box-shadow:0 10px 25px -5px rgba(0,0,0,.05),0 8px 10px -6px rgba(0,0,0,.01);padding:24px;box-sizing:border-box}
     .header{text-align:center;margin-bottom:18px}
     .icon{font-size:40px;margin-bottom:10px}
     h1{font-size:20px;font-weight:800;margin:0 0 6px}
     .subtitle{font-size:13px;color:var(--muted);line-height:1.5}
-
-    .info{
-      background:var(--accent);border:1px solid var(--border);
-      border-radius:12px;padding:16px;margin:16px 0 18px;
-    }
+    .info{background:var(--accent);border:1px solid var(--border);border-radius:12px;padding:16px;margin:16px 0 18px}
     .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
     .row:last-child{margin-bottom:0}
     .label{color:var(--muted);font-weight:700}
     .value{font-weight:800;text-align:right}
-
-    .pill{
-      display:inline-block;padding:4px 10px;border-radius:999px;
-      font-size:12px;font-weight:900;color:#fff;background:#111827;
-    }
-    .pill.orange{background:#EA580C;}
-
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;color:#fff;background:#111827}
+    .pill.orange{background:#EA580C}
     .field{margin-bottom:16px}
     .field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
-    .field input,.field textarea{
-      width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;
-      border:1.5px solid var(--border);font-size:15px;color:var(--text);
-      background:#FAFAFA;transition:.2s;
-    }
+    .field input,.field textarea{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:15px;color:var(--text);background:#FAFAFA}
     .field textarea{min-height:90px;resize:vertical}
-    .field input:focus,.field textarea:focus{
-      outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px rgba(17,24,39,.1);
-    }
     .hint{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center}
-
-    .filebox{
-      background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:12px;padding:12px;
-      display:flex;gap:8px;align-items:center;
-    }
+    .filebox{background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:12px;padding:12px;display:flex;gap:8px;align-items:center}
     .filebox input{border:none;background:transparent;padding:0;font-size:13px;color:#9CA3AF;width:100%}
-    .filebox input:focus{box-shadow:none}
-
     .buttons{display:flex;gap:12px;margin-top:22px}
-    .btn{
-      flex:1;padding:14px 16px;border-radius:14px;border:none;
-      font-size:15px;font-weight:900;cursor:pointer;
-      transition:transform .1s, opacity .2s;
-    }
-    .btn:active{transform:scale(.98)}
+    .btn{flex:1;padding:14px 16px;border-radius:14px;border:none;font-size:15px;font-weight:900;cursor:pointer}
     .btn-primary{background:var(--primary);color:#fff}
     .btn-secondary{background:#E5E7EB;color:#4B5563}
-
     .msg{margin-top:14px;font-size:13px;font-weight:800;text-align:center;padding:10px;border-radius:10px;display:none}
     .msg.show{display:block}
     .msg.success{background:#D1FAE5;color:#065F46}
     .msg.error{background:#FEE2E2;color:#991B1B}
-    .msg.warn{background:#FEF3C7;color:#92400E}
   </style>
 </head>
 <body>
@@ -94,21 +46,11 @@
 
     <div id="form" style="display:none;">
       <div class="info">
-        <div class="row">
-          <span class="label">Mode</span>
-          <span class="value"><span id="modeBadge" class="pill">-</span></span>
-        </div>
-        <div class="row">
-          <span class="label">Run No.</span>
-          <span class="value" id="runNoText">-</span>
-        </div>
-        <div class="row">
-          <span class="label">Company / Sheet</span>
-          <span class="value" id="receiverText">-</span>
-        </div>
+        <div class="row"><span class="label">Mode</span><span class="value"><span id="modeBadge" class="pill">-</span></span></div>
+        <div class="row"><span class="label">Run No.</span><span class="value" id="runNoText">-</span></div>
+        <div class="row"><span class="label">Company / Sheet</span><span class="value" id="receiverText">-</span></div>
       </div>
 
-      <!-- NORMAL -->
       <div id="normalFields">
         <div class="field">
           <label>👤 ชื่อลูกค้า</label>
@@ -122,11 +64,9 @@
         <div class="field">
           <label>💰 จำนวนเงิน</label>
           <input id="amount" type="number" step="any" placeholder="ex. 5999">
-          <div class="hint">💡 กรอกเฉพาะตัวเลข</div>
         </div>
       </div>
 
-      <!-- OTHER -->
       <div id="otherFields" style="display:none;">
         <div class="field">
           <label>📝 Note (Other)</label>
@@ -136,10 +76,7 @@
 
       <div class="field">
         <label>🔗 Slip URL</label>
-        <div class="filebox">
-          <span>📄</span>
-          <input id="fileUrl" type="text" readonly value="-">
-        </div>
+        <div class="filebox"><span>📄</span><input id="fileUrl" type="text" readonly value="-"></div>
       </div>
 
       <div class="buttons">
@@ -153,10 +90,7 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    // ✅ LIFF ID ของ Payment Editor
     const LIFF_ID = '2009213238-f1ncr2hm';
-
-    // ✅ Backend GET เพื่อ prefill
     const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbysUQ6VItRGSDHON-5SDIJe1qQA1dsD7q5ng7K-_RxPNCBBeermnsCk2MUQfrSk7Sff/exec';
 
     function qs() {
@@ -172,26 +106,25 @@
 
     function showMsg(text, type) {
       const el = document.getElementById('message');
-      if (!text) {
-        el.className = 'msg';
-        el.textContent = '';
-        return;
-      }
+      if (!text) { el.className = 'msg'; el.textContent = ''; return; }
       el.textContent = text;
       el.className = 'msg show ' + (type || '');
     }
 
-    // กันตัวอักษรที่ทำให้ parser ของบอทพัง (| และ =)
     function safeValue(v) {
-      return String(v ?? '')
-        .replaceAll('|', '｜')
-        .replaceAll('=', '＝')
-        .trim();
+      return String(v ?? '').replaceAll('|','｜').replaceAll('=','＝').trim();
+    }
+    function buildPairs(pairs) {
+      return pairs.map(([k,v]) => `${k}=${safeValue(v)}`).join('|');
     }
 
-    function buildPairs(pairs) {
-      // ไม่ encode เพื่อไม่ให้เป็นภาษามนุษย์ต่างดาว
-      return pairs.map(([k, v]) => `${k}=${safeValue(v)}`).join('|');
+    function cleanDateText(v){
+      if(!v) return '';
+      const s = String(v);
+      // ตัดเวลา ISO ออก
+      const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if(m) return `${Number(m[3])}/${Number(m[2])}/${m[1]}`;
+      return s.replace(/T.*$/,'').trim();
     }
 
     function setModeUI(mode) {
@@ -212,14 +145,7 @@
     async function prefill(runNo, receiver) {
       const url = `${BACKEND_URL}?action=getPayment&runNo=${encodeURIComponent(runNo)}&receiver=${encodeURIComponent(receiver)}`;
       const res = await fetch(url, { method: 'GET' });
-
-      let json;
-      try {
-        json = await res.json();
-      } catch (e) {
-        throw new Error('ไม่สามารถอ่านข้อมูลจากเซิร์ฟเวอร์ได้');
-      }
-
+      const json = await res.json();
       if (!json.success) throw new Error(json.message || 'โหลดข้อมูลไม่สำเร็จ');
       return json.data || {};
     }
@@ -227,20 +153,17 @@
     async function main() {
       const subtitle = document.getElementById('subtitle');
 
-      try {
-        await liff.init({ liffId: LIFF_ID });
-      } catch (err) {
+      try { await liff.init({ liffId: LIFF_ID }); }
+      catch (err) {
         console.error(err);
         subtitle.textContent = 'โหลด LIFF ไม่สำเร็จ: ' + (err.message || err);
         return;
       }
 
       const p = qs();
-      const page = (p.page || '').toLowerCase();     // payment | other
+      const page = (p.page || '').toLowerCase(); // payment | other
       const runNo = (p.runNo || '').trim();
       let receiver = (p.receiver || '').trim();
-
-      // fallback สำหรับ other
       if (!receiver && page === 'other') receiver = 'OTHER';
 
       if (!runNo || !receiver) {
@@ -248,20 +171,17 @@
         return;
       }
 
-      // header
       document.getElementById('runNoText').textContent = runNo;
       document.getElementById('receiverText').textContent = receiver;
 
-      // prefill
       let data = {};
       try {
         data = await prefill(runNo, receiver);
         subtitle.textContent = 'โหลดข้อมูลสำเร็จ ✅ แก้ไขแล้วกดบันทึก';
       } catch (e) {
-        console.error('prefill error:', e);
+        console.error(e);
         subtitle.textContent = 'โหลดข้อมูลไม่สำเร็จ';
-        showMsg(e.message || 'โหลดข้อมูลไม่สำเร็จ', 'warn');
-        // ยังให้แก้ได้ แต่ไม่ prefill
+        showMsg(e.message || 'โหลดข้อมูลไม่สำเร็จ', 'error');
       }
 
       const isOther =
@@ -278,31 +198,24 @@
         document.getElementById('note').value = data.note || data.noteText || '';
       } else {
         document.getElementById('senderName').value = data.senderName || '';
-        document.getElementById('transactionDate').value = data.transactionDateText || data.transactionDate || '';
-        document.getElementById('amount').value = data.amount || data.amountText || '';
+        document.getElementById('transactionDate').value = cleanDateText(data.transactionDateText || data.transactionDate || '');
+        document.getElementById('amount').value = (data.amountText || data.amount || '');
       }
 
       document.getElementById('form').style.display = 'block';
 
       document.getElementById('btnCancel').addEventListener('click', () => {
-        try {
-          if (liff.isInClient()) liff.closeWindow();
-          else showMsg('ยกเลิกการแก้ไขแล้ว', 'warn');
-        } catch (e) {}
+        try { if (liff.isInClient()) liff.closeWindow(); } catch(e){}
       });
 
       document.getElementById('btnSave').addEventListener('click', async () => {
         showMsg('', '');
 
-        if (!liff.isInClient()) {
-          showMsg('กรุณาเปิดหน้านี้ใน LINE app เพื่อบันทึกข้อมูล', 'error');
-          return;
-        }
+        if (!liff.isInClient()) { showMsg('กรุณาเปิดใน LINE app เพื่อบันทึก', 'error'); return; }
 
         const mode = (document.body.dataset.mode || 'PAYMENT').toUpperCase();
         const btn = document.getElementById('btnSave');
-        btn.textContent = 'กำลังส่งคำสั่ง...';
-        btn.disabled = true;
+        btn.textContent = 'กำลังส่งคำสั่ง...'; btn.disabled = true;
 
         try {
           if (mode === 'OTHER') {
@@ -314,7 +227,6 @@
               ['receiver', receiver],
               ['note', note]
             ]);
-
             await liff.sendMessages([{ type: 'text', text: cmd }]);
             showMsg('ส่งคำสั่งแก้ไขเรียบร้อย ✅', 'success');
           } else {
@@ -333,19 +245,17 @@
               ['transactionDate', transactionDate],
               ['amount', amount]
             ]);
-
             await liff.sendMessages([{ type: 'text', text: cmd }]);
             showMsg('ส่งคำสั่งแก้ไขเรียบร้อย ✅', 'success');
           }
 
-          setTimeout(() => { try { liff.closeWindow(); } catch (e) {} }, 900);
+          setTimeout(() => { try { liff.closeWindow(); } catch(e){} }, 900);
 
         } catch (e) {
           console.error('sendMessages error:', e);
           showMsg('ไม่สามารถส่งคำสั่งได้ กรุณาลองใหม่อีกครั้ง', 'error');
         } finally {
-          btn.textContent = 'บันทึกข้อมูล';
-          btn.disabled = false;
+          btn.textContent = 'บันทึกข้อมูล'; btn.disabled = false;
         }
       });
     }
